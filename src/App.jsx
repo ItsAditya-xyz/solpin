@@ -6,16 +6,21 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import SignUp from "./pages/Signup/SignUp";
 import WalletContextProvider from "./components/walletContextProvider";
 import LandingPage from "./components/landingPage";
+import SplingContext from "./Context/SplingContext/SplingContext";
+import Profile from "./pages/Profile/Profile";
 
 function App() {
   return (
     <WalletContextProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/sign-up" element={<SignUp />} />
-        </Routes>
-      </BrowserRouter>
+      <SplingContext>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/sign-up" element={<SignUp />} />
+          
+          </Routes>
+        </BrowserRouter>
+      </SplingContext>
     </WalletContextProvider>
   );
 }

@@ -1,14 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import party from "party-js";
 import { Loader } from "../../components/Loader";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { BiUpload, BiX } from "react-icons/bi";
 import banner from "../../assets/banner.jpg";
 import default_profile_pic from "../../assets/default_profile_pic.png";
+import SplingContext from "../../Context/SplingContext/SplingContext";
+import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import { SocialProtocol } from "@spling/social-protocol";
 function ProfileForm() {
+  const SplingContextValue = useContext(SplingContext);
   const [profileImage, setProfileImage] = useState(default_profile_pic);
+  const [profileImageFile, setProfileImageFile] = useState(null);
   const [isUploadingProfileImage, setIsUploadingProfileImage] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -16,21 +20,67 @@ function ProfileForm() {
   const [profileDescription, setProfileDescription] = useState("");
   const [isUploadingProfilePic, setIsUploadingProfilePic] = useState(false);
 
+  const [socialProtocol, setSocialProtocol] = useState(
+    SplingContextValue.socialProtocol
+  );
+  const wallet = useAnchorWallet();
   const fileInput = React.useRef(null);
 
+  useEffect(() => {
+    async function initApp() {
+      console.log(wallet);
+      const protocolOptions = {
+        useIndexer: true,
+        rpcUrl:
+          "https://solana-mainnet.g.alchemy.com/v2/2Y3ODmvjlgmxpBH-U7jOJlIy3nrtyt2p",
+      };
+      const socialProtocolVal = await new SocialProtocol(
+        wallet,
+        null,
+        protocolOptions
+      ).init();
+      console.log(socialProtocolVal);
+      SplingContextValue.updateSocialProtocol(socialProtocol);
+      setSocialProtocol(socialProtocolVal);
+    }
+    if (wallet?.publicKey && typeof wallet !== "undefined") {
+      initApp();
+    }
+  }, [wallet]);
+
   const updateProfile = async () => {
-    // const user = await socialProtocol.createUser(nickname: string, avatar: FileData | FileUriData, biography: string)
+    if (!wallet || typeof wallet == "undefined")
+      return toast.error("Wallet not connected");
+    if (!username) return toast.error("Please enter a username");
+    if (!profileImage) return toast.error("Please upload a profile image");
+    if (!profileDescription)
+      return toast.error("Please enter a profile description");
+    const user = await socialProtocol.createUser(
+      username,
+      null,
+      profileDescription
+    );
+    console.log(user);
   };
 
   const handleUsernameChange = (e) => {
     setUsername(e.target.value);
   };
   const handleProfilePicUpload = async () => {
-    setIsUploadingProfileImage(true);
+    //store the file in the state
+    const file = fileInput.current.files[0];
+    if (!file) return toast.error("Please select a file");
+    if (file.size > 1000000) return toast.error("File size too large");
+    if (!file.type.includes("image"))
+      return toast.error("Please upload an image file");
+    setProfileImage(URL.createObjectURL(file));
+    console.log(file);
+    setProfileImageFile(file);
   };
 
   return (
     <div className="flex   mx-auto  justify-center items-start w-full md:w-2/3 mb-24">
+      <Toaster />
       <div className="flex mx-auto  w-full space-y-6 md:flex-row md:space-x-10 md:space-y-0">
         <div className="flex mx-auto flex-col w-full md:w-3/4 secondaryBg border secondaryBorder rounded-xl p-4">
           <div

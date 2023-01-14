@@ -1,24 +1,30 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import styles from "../../src/styles/Home.module.css";
 import { ProtocolOptions, SocialProtocol } from "@spling/social-protocol";
-import { Wallet } from "@project-serum/anchor";
 import { useAnchorWallet } from "@solana/wallet-adapter-react";
 import logo from "../assets/logo.png";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import SplingContext from "../Context/SplingContext/SplingContext";
 
 function LandingPage() {
+  const SplingContextValue = useContext(SplingContext);
   const wallet = useAnchorWallet();
 
   useEffect(() => {
     async function initApp() {
       console.log(wallet);
-      const protocolOptions = { useIndexer: true };
+      const protocolOptions = {
+        useIndexer: true,
+        rpcUrl:
+          "https://solana-mainnet.g.alchemy.com/v2/2Y3ODmvjlgmxpBH-U7jOJlIy3nrtyt2p",
+      };
       const socialProtocol = await new SocialProtocol(
         wallet,
         null,
         protocolOptions
       ).init();
       console.log(socialProtocol);
+      SplingContextValue.updateSocialProtocol(socialProtocol);
     }
     if (wallet?.publicKey && typeof wallet !== "undefined") {
       initApp();
