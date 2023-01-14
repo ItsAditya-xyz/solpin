@@ -1,8 +1,8 @@
 import SplingContext from "./SplingContext";
 import { useState } from "react";
-const SplingState = (props: any) => {
+const SplingState = (props) => {
   const [socialProtocol, setSocialProtocol] = useState(null);
-  const updateSocialProtocol = (socialProtocol: any) => {
+  const updateSocialProtocol = (socialProtocol) => {
     setSocialProtocol(socialProtocol);
   };
 

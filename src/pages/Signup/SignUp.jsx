@@ -11,7 +11,6 @@ function SignUp() {
                 <img src={logo} height={30} width={200} />
                 <WalletMultiButton />
             </div>
-           
            <ProfileForm/>
         </div>
     );
