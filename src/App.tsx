@@ -8,11 +8,13 @@ function App() {
   return (
 
     <WalletContextProvider>
+       <BrowserRouter>
       <Routes>
         <Route path='/' element={
           <SignUp />
         } />
       </Routes>
+      </BrowserRouter>
     </WalletContextProvider>
   );
 }

@@ -1,21 +1,13 @@
 import React, { useEffect } from 'react';
 import styles from "../../src/styles/Home.module.css"
 import { ProtocolOptions, SocialProtocol } from '@spling/social-protocol';
-import { AnchorWallet, useAnchorWallet } from '@solana/wallet-adapter-react'
+import { useAnchorWallet } from '@solana/wallet-adapter-react'
 function LandingPage() {
     const wallet = useAnchorWallet();
     console.log(wallet)
 
     useEffect(() => {
-        async function initApp() {
-            const protocolOptions = { useIndexer: true } as ProtocolOptions
-            const socialProtocol: SocialProtocol = await new SocialProtocol(wallet, null, protocolOptions).init()
-            console.log(socialProtocol)
-        }
-        if (wallet?.publicKey && typeof wallet !== "undefined") {
-            initApp()
-        }
-
+       
 
     }, [wallet])
 
