@@ -4,7 +4,7 @@ import SplingContext from "../../Context/SplingContext/SplingContext";
 import { Loader } from "../../components/Loader";
 import { SocialProtocol } from "@spling/social-protocol";
 
-import { Keypair, PublicKey } from '@solana/web3.js';
+import { Keypair, PublicKey } from "@solana/web3.js";
 function ProfilePage(props) {
   const { publicKey } = useParams();
   const [publicKeyVal, setPublicKeyVal] = useState(null);
@@ -16,15 +16,32 @@ function ProfilePage(props) {
     setPublicKeyVal(publicKey);
   }, [publicKey]);
 
+  const convertBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+
+        fileReader.onload = () => {
+            resolve(fileReader.result);
+        };
+
+        fileReader.onerror = (error) => {
+            reject(error);
+        };
+    });
+};
+
   useEffect(() => {
     if (!publicKeyVal) return;
     async function getUserInfo() {
-      console.log(publicKeyVal)
-        //convert address stored in publicKeyVal to Keypair
-      console.log(socialProtocolValue)
-      const publicKeyObj = new PublicKey(publicKeyVal)
-      console.log(publicKeyObj)
-      const userInfo = await socialProtocolValue.getUserByPublicKey(publicKeyObj);
+      console.log(publicKeyVal);
+      //convert address stored in publicKeyVal to Keypair
+      console.log(socialProtocolValue);
+      const publicKeyObj = new PublicKey(publicKeyVal);
+      console.log(publicKeyObj);
+      const userInfo = await socialProtocolValue.getUserByPublicKey(
+        publicKeyObj
+      );
       console.log(userInfo);
       setUserInfo(userInfo);
     }
