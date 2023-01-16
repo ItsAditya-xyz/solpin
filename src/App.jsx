@@ -5,7 +5,7 @@ import "./styles/styles.css";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import SignUp from "./pages/Signup/SignUp";
 import WalletContextProvider from "./components/walletContextProvider";
-import LandingPage from "./components/landingPage";
+import LandingPage from "./pages/Landing/LandingPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
 import SplingContext from "./Context/SplingContext/SplingContext";
 import Delete from "./pages/DeleteProfile/Delete";

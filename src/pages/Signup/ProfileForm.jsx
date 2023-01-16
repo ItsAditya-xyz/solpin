@@ -48,8 +48,6 @@ function ProfileForm() {
     }
   }, [wallet]);
 
-
-
   const updateProfile = async () => {
     if (!wallet || typeof wallet == "undefined")
       return toast.error("Wallet not connected");
@@ -57,19 +55,32 @@ function ProfileForm() {
     if (!profileImage) return toast.error("Please upload a profile image");
     if (!profileDescription)
       return toast.error("Please enter a profile description");
-    let bs64 = await convertBase64(profileImageFile);
 
-    let finalObj = {
-      base64: bs64,
-      size: profileImageFile.size,
-      type: profileImageFile.type,
-    };
-    const user = await socialProtocol.createUser(
-      username,
-      finalObj,
-      profileDescription
-    );
-    console.log(user);
+    const toastID = toast.loading("Creating your profile...");
+    try {
+      let bs64 = await convertBase64(profileImageFile);
+
+      let finalObj = {
+        base64: bs64,
+        size: profileImageFile.size,
+        type: profileImageFile.type,
+      };
+      const user = await socialProtocol.createUser(
+        username,
+        finalObj,
+        profileDescription
+      );
+      if (user) {
+        toast.dismiss(toastID);
+        toast.success("Profile created successfully");
+      } else {
+        toast.dismiss(toastID);
+        toast.error("Something went wrong");
+      }
+    } catch (err) {
+      toast.dismiss(toastID);
+      toast.error("Something went wrong. Please Try again..");
+    }
   };
 
   const handleUsernameChange = (e) => {

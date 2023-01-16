@@ -1,46 +1,52 @@
 import React, { useEffect, useContext } from "react";
-import styles from "../../src/styles/Home.module.css";
-import { ProtocolOptions, SocialProtocol } from "@spling/social-protocol";
-import { useAnchorWallet } from "@solana/wallet-adapter-react";
-import logo from "../assets/logo.png";
+import styles from "../../styles/Home.module.css";
+import { SocialProtocol } from "@spling/social-protocol";
+import logo from "../../assets/logo.png";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import SplingContext from "../Context/SplingContext/SplingContext";
-
+import SplingContext from "../../Context/SplingContext/SplingContext";
+import { Keypair } from "@solana/web3.js";
+import { Loader } from "../../components/Loader";
 function LandingPage() {
   const SplingContextValue = useContext(SplingContext);
-  const wallet = useAnchorWallet();
+  const [response, setResponse] = React.useState(null);
+  const [isLoading, setIsLoading] = React.useState(true);
 
   useEffect(() => {
     async function initApp() {
-      console.log(wallet);
       const protocolOptions = {
         useIndexer: true,
         rpcUrl:
           "https://solana-mainnet.g.alchemy.com/v2/2Y3ODmvjlgmxpBH-U7jOJlIy3nrtyt2p",
       };
       const socialProtocol = await new SocialProtocol(
-        wallet,
+        Keypair.generate(),
         null,
         protocolOptions
       ).init();
       console.log(socialProtocol);
-      SplingContextValue.updateSocialProtocol(socialProtocol);
+
+      const posts = await socialProtocol.getAllPosts(11, 50);
+      console.log(posts);
+      setResponse(posts);
+      setIsLoading(false);
     }
-    if (wallet?.publicKey && typeof wallet !== "undefined") {
+    if (!response) {
       initApp();
     }
-  }, [wallet]);
+  }, []);
 
   return (
-    <div className="w-full">
+    <div className='w-full'>
       <div className={styles.AppHeader}>
         <img src={logo} height={30} width={200} />
         <WalletMultiButton />
       </div>
       <div>
-        <div className="bg-yellow-300 text-gray-900 mx-auto px-5  flex items-center justify-center py-5">
-          <div>Solpin is in Beta. Things may break</div>
-        </div>
+        {isLoading && (
+          <div className='flex justify-center items-center mx-auto my-4'>
+            <Loader />
+          </div>
+        )}
       </div>
     </div>
   );
