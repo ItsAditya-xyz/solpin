@@ -6,6 +6,7 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import SplingContext from "../../Context/SplingContext/SplingContext";
 import { Keypair } from "@solana/web3.js";
 import { Loader } from "../../components/Loader";
+
 function LandingPage() {
   const SplingContextValue = useContext(SplingContext);
   const [response, setResponse] = React.useState(null);
@@ -25,7 +26,7 @@ function LandingPage() {
       ).init();
       console.log(socialProtocol);
 
-      const posts = await socialProtocol.getAllPosts(11, 50);
+      const posts = await socialProtocol.getAllPosts(12, 50);
       console.log(posts);
       setResponse(posts);
       setIsLoading(false);

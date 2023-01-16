@@ -54,6 +54,19 @@ function CreateGroup() {
     console.log(group);
   };
 
+  const deleteGroup = async () => {
+    if (!wallet || typeof wallet == "undefined")
+      return toast.error("Wallet not connected");
+
+    if (!socialProtocol) return toast.error("Wallet not connected");
+    const loadingToast = toast.loading("Deleting Group");
+    const group = await socialProtocol.deleteGroup();
+    toast.dismiss(loadingToast);
+    toast.success("Group Deleted");
+
+    console.log(group);
+  };
+
   return (
     <div>
       <div className={styles.AppHeader}>
@@ -75,6 +88,15 @@ function CreateGroup() {
               }`}>
               {loading && <Loader className='w-3.5 h-3.5' />}
               <span>Create Group</span>
+            </button>
+
+            <button
+              onClick={() => deleteGroup()}
+              className={` flex items-center justify-center space-x-2 font-medium text-white px-6 py-3 leading-none rounded-full buttonBG my-2 ${
+                loading ? "cursor-not-allowed bg-opacity-50" : ""
+              }`}>
+              {loading && <Loader className='w-3.5 h-3.5' />}
+              <span>Delete Group</span>
             </button>
           </div>
         </div>

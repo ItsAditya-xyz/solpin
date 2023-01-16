@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import SplingContext from "../../Context/SplingContext/SplingContext";
 import { Loader } from "../../components/Loader";
 import { SocialProtocol } from "@spling/social-protocol";
+import { Link } from "react-router-dom";
 
 import { Keypair, PublicKey } from "@solana/web3.js";
 function ProfilePage(props) {
@@ -18,18 +19,18 @@ function ProfilePage(props) {
 
   const convertBase64 = (file) => {
     return new Promise((resolve, reject) => {
-        const fileReader = new FileReader();
-        fileReader.readAsDataURL(file);
+      const fileReader = new FileReader();
+      fileReader.readAsDataURL(file);
 
-        fileReader.onload = () => {
-            resolve(fileReader.result);
-        };
+      fileReader.onload = () => {
+        resolve(fileReader.result);
+      };
 
-        fileReader.onerror = (error) => {
-            reject(error);
-        };
+      fileReader.onerror = (error) => {
+        reject(error);
+      };
     });
-};
+  };
 
   useEffect(() => {
     if (!publicKeyVal) return;

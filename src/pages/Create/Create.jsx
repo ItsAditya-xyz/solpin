@@ -11,6 +11,7 @@ import SplingContext from "../../Context/SplingContext/SplingContext";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { SocialProtocol } from "@spling/social-protocol";
 import convertBase64 from "../../utils/functions";
+import { Link } from "react-router-dom";
 export default function Create() {
   const SplingContextValue = useContext(SplingContext);
   const [socialProtocol, setSocialProtocol] = useState(
@@ -76,7 +77,7 @@ export default function Create() {
         type: imageFile.type,
       };
 
-      const post = await socialProtocol.createPost(11, postBody, finalObj);
+      const post = await socialProtocol.createPost(12, postBody, "", finalObj);
       console.log(post);
       if (post) {
         toast.dismiss(toastID);
@@ -92,6 +93,14 @@ export default function Create() {
         return;
       }
     } catch (e) {
+      if (e.message.includes("Account does not exist")) {
+        toast.dismiss(toastID);
+        toast.success("Post created successfully");
+        setImageFile(null);
+        setImageURL("");
+        setPostBody("");
+        return;
+      }
       toast.dismiss(toastID);
       toast.error("Error creating post");
       console.log(e);
@@ -102,7 +111,9 @@ export default function Create() {
   return (
     <div>
       <div className={styles.AppHeader}>
-        <img src={logo} height={30} width={200} />
+        <Link to='/'>
+          <img src={logo} height={30} width={200} />
+        </Link>
         <WalletMultiButton />
       </div>
       <Toaster />
