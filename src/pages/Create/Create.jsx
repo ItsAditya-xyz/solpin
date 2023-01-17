@@ -10,7 +10,7 @@ import toast, { Toaster } from "react-hot-toast";
 import SplingContext from "../../Context/SplingContext/SplingContext";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { SocialProtocol } from "@spling/social-protocol";
-import convertBase64 from "../../utils/functions";
+import { convertBase64 } from "../../utils/functions";
 import { Link } from "react-router-dom";
 export default function Create() {
   const SplingContextValue = useContext(SplingContext);

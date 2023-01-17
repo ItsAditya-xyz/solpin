@@ -9,7 +9,7 @@ import default_profile_pic from "../../assets/default_profile_pic.png";
 import SplingContext from "../../Context/SplingContext/SplingContext";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { SocialProtocol } from "@spling/social-protocol";
-import convertBase64 from "../../utils/functions";
+import {convertBase64} from "../../utils/functions";
 function ProfileForm() {
   const SplingContextValue = useContext(SplingContext);
   const [profileImage, setProfileImage] = useState(default_profile_pic);

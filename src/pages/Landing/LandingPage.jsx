@@ -6,11 +6,14 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import SplingContext from "../../Context/SplingContext/SplingContext";
 import { Keypair } from "@solana/web3.js";
 import { Loader } from "../../components/Loader";
-
+import PostCard from "./PostCard";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import { useWallet } from "@solana/wallet-adapter-react";
 function LandingPage() {
   const SplingContextValue = useContext(SplingContext);
   const [response, setResponse] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(true);
+  const [socialProtocolVal, setSocialProtocolVal] = React.useState(null);
 
   useEffect(() => {
     async function initApp() {
@@ -26,7 +29,7 @@ function LandingPage() {
       ).init();
       console.log(socialProtocol);
 
-      const posts = await socialProtocol.getAllPosts(12, 50);
+      const posts = await socialProtocol.getAllPosts(12, 20);
       console.log(posts);
       setResponse(posts);
       setIsLoading(false);
@@ -36,16 +39,52 @@ function LandingPage() {
     }
   }, []);
 
+  const wallet = useWallet();
+  useEffect(() => {
+    async function initApp() {
+      const protocolOptions = {
+        useIndexer: true,
+        rpcUrl:
+          "https://solana-mainnet.g.alchemy.com/v2/2Y3ODmvjlgmxpBH-U7jOJlIy3nrtyt2p",
+      };
+      const socialProtocolValue = await new SocialProtocol(
+        wallet,
+        null,
+        protocolOptions
+      ).init();
+      console.log(socialProtocolValue);
+      SplingContextValue.updateSocialProtocol(socialProtocolValue);
+      setSocialProtocolVal(socialProtocolVal);
+    }
+    if (wallet?.publicKey && typeof wallet !== "undefined") {
+      initApp();
+    }
+  }, [wallet]);
+
   return (
     <div className='w-full'>
       <div className={styles.AppHeader}>
-        <img src={logo} height={30} width={200} />
+        <img src={logo} className='w-[45%] sm:w-[200px]' />
         <WalletMultiButton />
       </div>
       <div>
         {isLoading && (
           <div className='flex justify-center items-center mx-auto my-4'>
             <Loader />
+          </div>
+        )}
+        {!isLoading && (
+          <div className=''>
+            <ResponsiveMasonry
+              columnsCountBreakPoints={{ 350: 2, 750: 3, 900: 5 }}>
+              <Masonry gutter='10px'>
+                {response.map((post, index) => (
+                  <div className='w-full px-1 mx-auto' key={index}>
+                    <PostCard postValue={post} />
+                  </div>
+                ))}
+              </Masonry>
+            </ResponsiveMasonry>
           </div>
         )}
       </div>

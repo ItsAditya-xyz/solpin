@@ -11,6 +11,7 @@ import SplingContext from "./Context/SplingContext/SplingContext";
 import Delete from "./pages/DeleteProfile/Delete";
 import Create from "./pages/Create/Create";
 import CreateGroup from "./pages/Group/CreateGroup";
+import Post from "./pages/Post/Post";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path='/delete' element={<Delete />} />
           <Route path='/create' element={<Create />} />
           <Route path='/create-group' element={<CreateGroup />} />
+          <Route path = '/post/:postID' element = {<Post/>} />
         </Routes>
       </BrowserRouter>
     </WalletContextProvider>
