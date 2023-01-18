@@ -6,7 +6,9 @@ import { Link } from "react-router-dom";
 export default function Navbar({ shouldShowWallet }) {
   return (
     <div className='bg-[#20252e] flex items-center justify-between px-2 py-3'>
+      <Link to='/'>
       <img src={logo} className='w-[160px]' />
+      </Link>
       {shouldShowWallet && <WalletMultiButton />}
       {!shouldShowWallet && (
         <div className=''>
