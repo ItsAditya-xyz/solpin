@@ -3,11 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import SplingContext from "../../Context/SplingContext/SplingContext";
 import { SocialProtocol } from "@spling/social-protocol";
 import { Link } from "react-router-dom";
-import styles from "../../styles/Home.module.css";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { Loader } from "../../components/Loader";
-import logo from "../../assets/logo.png";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { HiOutlineLink } from "react-icons/hi";
 import Tippy from "@tippyjs/react";
@@ -17,6 +14,7 @@ import BottomMeta from "./BottomMeta";
 import { timeStampToTimeAgo } from "../../utils/functions";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import PostCard from "../Landing/PostCard";
+import Navbar from "../../components/Navbar";
 export default function Post() {
   const { postID } = useParams();
   const BASE_URL = window.location.origin;
@@ -103,12 +101,7 @@ export default function Post() {
   return (
     <div className='w-full'>
       <Toaster />
-      <div className={styles.AppHeader}>
-        <Link to='/'>
-          <img src={logo} className='w-[45%] sm:w-[200px]' />
-        </Link>
-        <WalletMultiButton />
-      </div>
+     <Navbar/>
       <div>
         {isLoading && (
           <div className='flex justify-center items-center mx-auto my-4'>

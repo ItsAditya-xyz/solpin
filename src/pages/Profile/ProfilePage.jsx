@@ -8,11 +8,10 @@ import Tippy from "@tippyjs/react";
 import toast, { Toaster } from "react-hot-toast";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { useWallet } from "@solana/wallet-adapter-react";
-import styles from "../../styles/Home.module.css";
-import logo from "../../assets/logo.png";
+
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import PostCard from "../Landing/PostCard";
+import Navbar from "../../components/Navbar";
 function ProfilePage(props) {
   const { publicKey } = useParams();
   const [publicKeyVal, setPublicKeyVal] = useState(null);
@@ -93,12 +92,7 @@ function ProfilePage(props) {
   return (
     <div className='w-full'>
       <Toaster />
-      <div className={styles.AppHeader}>
-        <Link to='/'>
-          <img src={logo} className='w-[45%] sm:w-[200px]' />
-        </Link>
-        <WalletMultiButton />
-      </div>
+      <Navbar shouldShowWallet={true} />
       <div>
         {isLoading && (
           <div className='flex justify-center items-center h-screen'>

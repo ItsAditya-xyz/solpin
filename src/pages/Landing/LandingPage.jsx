@@ -101,12 +101,7 @@ function LandingPage() {
         </div>
       </div>
       <div>
-        {isLoading && (
-          <div className='flex justify-center items-center mx-auto my-4'>
-            <Loader />
-          </div>
-        )}
-        <div className='my-3 mb-5 '>
+      <div className='my-3 mb-5 '>
           <p className='text-gray-800 text-center text-2xl sm:text-4xl font-bold'>
             Trending Post on Solpin
           </p>
@@ -114,6 +109,13 @@ function LandingPage() {
             <div className='h-1 mx-auto brandGradientBg w-72 opacity-25 my-0 py-0 rounded-t'></div>
           </div>
         </div>
+        
+        {isLoading && (
+          <div className='flex justify-center items-center mx-auto my-4'>
+            <Loader />
+          </div>
+        )}
+       
         {!isLoading && (
           <div className=''>
             <ResponsiveMasonry

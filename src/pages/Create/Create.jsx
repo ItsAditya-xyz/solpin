@@ -3,15 +3,13 @@ import { BiImageAdd, BiQuestionMark, BiRocket } from "react-icons/bi";
 import Tippy from "@tippyjs/react";
 import { Loader } from "../../components/Loader";
 import { BsTrash } from "react-icons/bs";
-import styles from "../../styles/Home.module.css";
-import logo from "../../assets/logo.png";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import toast, { Toaster } from "react-hot-toast";
 import SplingContext from "../../Context/SplingContext/SplingContext";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { SocialProtocol } from "@spling/social-protocol";
 import { convertBase64 } from "../../utils/functions";
 import { Link } from "react-router-dom";
+import Navbar from "../../components/Navbar";
 export default function Create() {
   const SplingContextValue = useContext(SplingContext);
   const [socialProtocol, setSocialProtocol] = useState(
@@ -116,12 +114,7 @@ export default function Create() {
 
   return (
     <div>
-      <div className={styles.AppHeader}>
-        <Link to='/'>
-          <img src={logo} height={30} width={200} />
-        </Link>
-        <WalletMultiButton />
-      </div>
+      <Navbar shouldShowWallet={true} />
       <Toaster />
       <div className='sm:w-3/4 md:w-3/5 lg:w-1/2 mx-auto my-3 '>
         <textarea

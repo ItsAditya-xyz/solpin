@@ -4,9 +4,7 @@ import toast, { Toaster } from "react-hot-toast";
 import SplingContext from "../../Context/SplingContext/SplingContext";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { SocialProtocol } from "@spling/social-protocol";
-import styles from "../../styles/Home.module.css";
-import logo from "../../assets/logo.png";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import Navbar from "../../components/Navbar";
 function CreateGroup() {
   const SplingContextValue = useContext(SplingContext);
   const [loading, setLoading] = useState(false);
@@ -69,10 +67,7 @@ function CreateGroup() {
 
   return (
     <div>
-      <div className={styles.AppHeader}>
-        <img src={logo} height={30} width={200} />
-        <WalletMultiButton />
-      </div>
+    <Navbar/>
 
       <div className='flex   mx-auto  justify-center items-start w-full md:w-2/3 mb-24'>
         <Toaster />
