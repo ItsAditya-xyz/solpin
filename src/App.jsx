@@ -1,5 +1,5 @@
 import React, { useEffect, useContext } from "react";
-import logo from "./logo.svg";
+
 import "./App.css";
 import "./styles/styles.css";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
@@ -7,7 +7,6 @@ import SignUp from "./pages/Signup/SignUp";
 import WalletContextProvider from "./components/walletContextProvider";
 import LandingPage from "./pages/Landing/LandingPage";
 import ProfilePage from "./pages/Profile/ProfilePage";
-import SplingContext from "./Context/SplingContext/SplingContext";
 import Delete from "./pages/DeleteProfile/Delete";
 import Create from "./pages/Create/Create";
 import CreateGroup from "./pages/Group/CreateGroup";

@@ -56,7 +56,7 @@ function ProfileForm() {
     if (!profileDescription)
       return toast.error("Please enter a profile description");
 
-    const toastID = toast.loading("Creating your profile...");
+    const toastID = toast.loading("Creating your profile. This may take a while...");
     try {
       let bs64 = await convertBase64(profileImageFile);
 
