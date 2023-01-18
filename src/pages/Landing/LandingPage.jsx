@@ -103,7 +103,7 @@ function LandingPage() {
       <div>
       <div className='my-3 mb-5 '>
           <p className='text-gray-800 text-center text-2xl sm:text-4xl font-bold'>
-            Trending Post on Solpin
+            Trending Posts on Solpin
           </p>
           <div className='w-full mb-8 mt-1'>
             <div className='h-1 mx-auto brandGradientBg w-72 opacity-25 my-0 py-0 rounded-t'></div>

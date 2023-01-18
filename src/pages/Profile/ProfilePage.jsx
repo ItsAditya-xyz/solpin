@@ -111,7 +111,7 @@ function ProfilePage(props) {
                   <p className='text-3xl sm:text-4xl font-bold mt-2'>
                     {userInfo.nickname}
                   </p>
-                  <div className='mt-3'>
+                  <div className='mt-3 ml-2 sm:ml-0'>
                     <button className='px-4 py-2 border-[#512DA8] border-2 hover:bg-[#512DA8] hover:text-white rounded-full text-sm ml-1 sm:ml-0'>
                       Folllow
                     </button>
@@ -120,8 +120,8 @@ function ProfilePage(props) {
                 <p className='text-xl text-gray-800 mt-3 ml-1 break-words'>
                   {userInfo.bio}
                 </p>
-                <div className='flex flex-col sm:flex-row space-x-2 sm:items-center mt-5'>
-                  <div className='flex flex-row space-x-2 items-start'>
+                <div className='flex flex-col sm:flex-row sm:space-x-2 sm:items-center mt-5 ml-1 sm:ml-0'>
+                  <div className='flex flex-row space-x-2 items-start '>
                     <p className=' text-gray-700 '>
                       {userInfo.following.length} Following
                     </p>
@@ -157,7 +157,10 @@ function ProfilePage(props) {
 
       {!isLoading && !loadingPosts && userContent && (
         <div className='mt-10'>
-          <p className='text-2xl font-bold text-center my-3'>Posts</p>
+          <p className='text-2xl font-bold text-center my-3'>Posts by {userInfo.nickname}</p>
+          <div className='w-full mb-8 mt-1'>
+            <div className='h-1 mx-auto brandGradientBg w-72 opacity-25 my-0 py-0 rounded-t'></div>
+          </div>
           <ResponsiveMasonry
             columnsCountBreakPoints={{ 350: 2, 750: 3, 900: 5 }}>
             <Masonry gutter='10px'>

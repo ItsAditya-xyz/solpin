@@ -102,7 +102,7 @@ export default function Post() {
   return (
     <div className='w-full'>
       <Toaster />
-     <Navbar/>
+      <Navbar />
       <div>
         {isLoading && (
           <div className='flex justify-center items-center mx-auto my-4'>
@@ -178,6 +178,9 @@ export default function Post() {
             <p className='text-2xl font-bold text-center my-3'>
               Other Posts by {postInfo.user.nickname}
             </p>
+            <div className='w-full mb-8 mt-1'>
+              <div className='h-1 mx-auto brandGradientBg w-72 opacity-25 my-0 py-0 rounded-t'></div>
+            </div>
             <ResponsiveMasonry
               columnsCountBreakPoints={{ 350: 2, 750: 3, 900: 5 }}>
               <Masonry gutter='10px'>
