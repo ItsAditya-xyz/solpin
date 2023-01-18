@@ -12,6 +12,11 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { HiOutlineLink } from "react-icons/hi";
 import Tippy from "@tippyjs/react";
 import toast, { Toaster } from "react-hot-toast";
+import ProfileCard from "./ProfileCard";
+import BottomMeta from "./BottomMeta";
+import { timeStampToTimeAgo } from "../../utils/functions";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import PostCard from "../Landing/PostCard";
 export default function Post() {
   const { postID } = useParams();
   const BASE_URL = window.location.origin;
@@ -20,10 +25,14 @@ export default function Post() {
   const [postInfo, setPostInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [socialProtocolVal, setSocialProtocolVal] = useState(null);
+  const [timeAgo, setTimeAgo] = useState(null);
+
+  const [otherPostInfo, setOtherPostInfo] = useState(null);
+  const [loadingOtherPosts, setLoadingOtherPosts] = useState(true);
 
   const copied = () => {
     console.log("copied");
-    toast.success("Copied! link to your clipboard to share");
+    toast.success("Copied post link to your clipboard to share");
   };
 
   useEffect(() => {
@@ -42,9 +51,27 @@ export default function Post() {
       console.log(socialProtocol);
 
       const postVal = await socialProtocol.getPost(parseInt(postID));
-      console.log(postVal);
-      setPostInfo(postVal);
-      setIsLoading(false);
+      if (postVal) {
+        console.log(postVal);
+        setPostInfo(postVal);
+        setTimeAgo(timeStampToTimeAgo(postVal.timestamp * 1e9));
+        setIsLoading(false);
+
+        const userID = postVal.userId;
+
+        const userPosts = await socialProtocol.getAllPostsByUserId(userID);
+        const finalResult = [];
+        //loop through userPosts and add that post to finalResult only when media's array length is greater than 0
+        for (let i = 0; i < userPosts.length; i++) {
+          if (userPosts[i].media.length > 0) {
+            finalResult.push(userPosts[i]);
+          }
+        }
+        setOtherPostInfo(finalResult);
+        setLoadingOtherPosts(false);
+      } else {
+        toast.error("Post not found");
+      }
     }
     if (postID && !postInfo) {
       initApp();
@@ -114,9 +141,10 @@ export default function Post() {
                   )}
                 </div>
               </div>
-              <div className='content flex flex-col w-full lg:w-2/4 pt-8 pb-4 px-8'>
+              <div className='content flex flex-col w-full lg:w-2/4 pt-8 pb-4'>
                 <div>
-                  <div className='flex flex-col items-center'>
+                  <div className='flex justify-between border-b-2 pb-4  px-8'>
+                    <ProfileCard userInfo={postInfo.user} />
                     <Tippy content={"Copy Post Link"} placement='bottom'>
                       <button
                         className='hover:bg-[#080623] hover:text-white bg-gray-200 duration-75 delay-75 w-12 h-12 flex justify-center items-center text-center rounded-full'
@@ -124,24 +152,48 @@ export default function Post() {
                           navigator.clipboard.writeText(
                             `${BASE_URL}/post/${postInfo.id}`
                           );
-                          toast.success("Copied link to your clipboard!");
+                          toast.success("Copied post link to your clipboard!");
                         }}>
                         <HiOutlineLink size={24} />
                       </button>
                     </Tippy>
                   </div>
                 </div>
-                {/* <ShareCard rootRef={rootRef} post={post} /> */}
-                {/* <UserCard
-                  user={user}
-                  profile={post.ProfileEntryResponse}
-                  follows={follows}
-                /> */}
-                <div className='mt-4 break-words body'>{postInfo.title}</div>
+
+                <div className='mt-4 break-words body px-8'>
+                  {postInfo.title}
+                </div>
+                <div className='border-t-2 my-8'>
+                  <BottomMeta post={postInfo} timesAgo={timeAgo} />
+                </div>
+
                 {/* <MetaCard post={post} />
                 <Comments post={post} /> */}
               </div>
             </div>
+          </div>
+        )}
+
+        {!isLoading && loadingOtherPosts && (
+          <div className='flex justify-center items-center mx-auto my-4'>
+            <Loader />
+          </div>
+        )}
+        {!isLoading && !loadingOtherPosts && otherPostInfo && (
+          <div className='mt-10 px-1'>
+            <p className='text-2xl font-bold text-center my-3'>
+              Other Posts by {postInfo.user.nickname}
+            </p>
+            <ResponsiveMasonry
+              columnsCountBreakPoints={{ 350: 2, 750: 3, 900: 5 }}>
+              <Masonry gutter='10px'>
+                {otherPostInfo.map((post, index) => (
+                  <div className='w-full px-1 mx-auto' key={index}>
+                    <PostCard postValue={post} />
+                  </div>
+                ))}
+              </Masonry>
+            </ResponsiveMasonry>
           </div>
         )}
       </div>

@@ -48,7 +48,13 @@ export default function Create() {
 
   const handleImageUpload = async (file) => {
     try {
-      if (!wallet?.publicKey) return toast.error("Please connect wallet first");
+      if (!wallet?.publicKey) {
+        toast.error("Please connect wallet first");
+        //mkae fileInput null
+        fileInput.current.value = null;
+
+        return;
+      }
       const file = fileInput.current.files[0];
       if (file.size > 10000000) return toast.error("File size too large");
       if (!file.type.includes("image"))

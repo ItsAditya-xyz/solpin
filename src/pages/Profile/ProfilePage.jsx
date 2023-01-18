@@ -11,6 +11,8 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
 import styles from "../../styles/Home.module.css";
 import logo from "../../assets/logo.png";
+import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import PostCard from "../Landing/PostCard";
 function ProfilePage(props) {
   const { publicKey } = useParams();
   const [publicKeyVal, setPublicKeyVal] = useState(null);
@@ -18,6 +20,10 @@ function ProfilePage(props) {
   const SplingContextValue = useContext(SplingContext);
   const [socialProtocolValue, setSocialProtocolValue] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const [loadingPosts, setLoadingPosts] = useState(true);
+
+  const [userContent, setUserContent] = useState(null);
   useEffect(() => {
     if (!publicKey) return;
     setPublicKeyVal(publicKey);
@@ -25,6 +31,8 @@ function ProfilePage(props) {
 
   useEffect(() => {
     if (!publicKeyVal) return;
+    if (userContent) return;
+    if (userInfo) return;
     async function getUserInfo() {
       console.log(publicKeyVal);
       //convert address stored in publicKeyVal to Keypair
@@ -34,9 +42,22 @@ function ProfilePage(props) {
       const userInfo = await socialProtocolValue.getUserByPublicKey(
         publicKeyObj
       );
+      console.log(userInfo);
       if (userInfo) {
-        setIsLoading(false);
+        const userID = userInfo.userId;
+
         setUserInfo(userInfo);
+        setIsLoading(false);
+        const userPosts = await socialProtocolValue.getAllPostsByUserId(userID);
+        const finalResult = [];
+        //loop through userPosts and add that post to finalResult only when media's array length is greater than 0
+        for (let i = 0; i < userPosts.length; i++) {
+          if (userPosts[i].media.length > 0) {
+            finalResult.push(userPosts[i]);
+          }
+        }
+        setUserContent(finalResult);
+        setLoadingPosts(false);
       } else {
         setIsLoading(false);
         toast.error("Something went wrong. Please try again later.");
@@ -70,36 +91,85 @@ function ProfilePage(props) {
   }, [publicKeyVal, socialProtocolValue]);
 
   return (
-    <div>
+    <div className='w-full'>
       <Toaster />
       <div className={styles.AppHeader}>
-        <Link to="/">
-          <img src={logo} className="w-[45%] sm:w-[200px]" />
+        <Link to='/'>
+          <img src={logo} className='w-[45%] sm:w-[200px]' />
         </Link>
         <WalletMultiButton />
       </div>
-      {isLoading && (
-        <div className="flex justify-center items-center h-screen">
-          <Loader />
-        </div>
-      )}
-      {!isLoading && userInfo && (
-        <div className="flex flex-col justify-center items-center mt-10">
-          <div className="flex  justify-center space-x-3">
-            <img
-              src={userInfo.avatar}
-              className="w-[120px] h-[120px] rounded-full"
-            />
-            <div className="flex flex-col ">
-              <p className="text-4xl font-bold mt-2">{userInfo.nickname}</p>
-              <p className="text-xl text-gray-800 mt-8">{userInfo.bio}</p>
-            </div>
-            <div className="mt-3">
-              <button className="px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-full">
-                Folllow
-              </button>
+      <div>
+        {isLoading && (
+          <div className='flex justify-center items-center h-screen'>
+            <Loader />
+          </div>
+        )}
+        {!isLoading && userInfo && (
+          <div className='flex flex-col justify-center items-center mt-10'>
+            <div className='flex  justify-center space-x-3'>
+              <img
+                src={userInfo.avatar}
+                className='w-[120px] h-[120px] rounded-full'
+              />
+              <div className='flex flex-col '>
+                <div className='flex justify-between items-center'>
+                  <p className='text-4xl font-bold mt-2'>{userInfo.nickname}</p>
+                  <div className='mt-3'>
+                    <button className='px-4 py-2 border-[#512DA8] border-2 hover:bg-[#512DA8] hover:text-white rounded-full text-sm'>
+                      Folllow
+                    </button>
+                  </div>
+                </div>
+                <p className='text-xl text-gray-800 mt-3 ml-1 break-words'>
+                  {userInfo.bio}
+                </p>
+                <div className='flex flex-row space-x-2 items-center mt-5'>
+                  <p className=' text-gray-700 '>
+                    {userInfo.following.length} Following
+                  </p>
+                  <p className=' text-gray-700  '>
+                    {userInfo.groups.length} Follows
+                  </p>
+                  <button
+                    className='px-2 py-1 bg-[#512DA8] hover:bg-[#3e237f] text-white rounded-md text-sm'
+                    onClick={() => {
+                      navigator.clipboard.writeText(publicKey.toString());
+                      toast.success("Public Key Copied to clipboard!");
+                    }}>
+                    {publicKey.toString().slice(0, 15)}...{" "}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
+        )}
+
+        {!isLoading && loadingPosts && (
+          <div className='flex justify-center items-center mt-10'>
+            <Loader />
+          </div>
+        )}
+      </div>
+      {!isLoading && !loadingPosts && !userContent && (
+        <div className='flex justify-center items-center h-screen mt-10'>
+          <p className='text-2xl font-bold'>No posts found</p>
+        </div>
+      )}
+
+      {!isLoading && !loadingPosts && userContent && (
+        <div className='mt-10'>
+          <p className='text-2xl font-bold text-center my-3'>Posts</p>
+          <ResponsiveMasonry
+            columnsCountBreakPoints={{ 350: 2, 750: 3, 900: 5 }}>
+            <Masonry gutter='10px'>
+              {userContent.map((post, index) => (
+                <div className='w-full px-1 mx-auto' key={index}>
+                  <PostCard postValue={post} />
+                </div>
+              ))}
+            </Masonry>
+          </ResponsiveMasonry>
         </div>
       )}
     </div>

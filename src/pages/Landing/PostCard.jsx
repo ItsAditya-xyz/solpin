@@ -5,16 +5,17 @@ import { BsHeart, BsHeartFill } from "react-icons/bs";
 export default function PostCard({ postValue }) {
   const post = postValue;
   const timeAgo = timeStampToTimeAgo(post.timestamp * 1e9);
+  const posterPublicKey = postValue.user.publicKey.toString();
 
   return (
     <div className='hover:scale-105 transition-transform duration-300'>
-      <div className='flex flex-col w-full shadow-sm border-md border border-gray-300 rounded-xl my-1 bg-[#f7f7fa]'>
+      <div className='flex flex-col w-full shadow-sm border-md  rounded-xl my-1 bg-[#f7f7fa]'>
         <Link to={`/post/${post.postId}`} className='flex flex-col w-full'>
           <img src={`${post.media[0].file}`} className='w-full rounded-t-xl' />
         </Link>
         <div className='flex w-full py-4 px-2 space-x-1'>
           <Link
-            to={`/`}
+            to={`/u/${posterPublicKey}`}
             className='cursor-pointer relative flex items-center justify-center space-x-1'>
             <img
               src={`${post.user.avatar}`}
@@ -24,7 +25,9 @@ export default function PostCard({ postValue }) {
           </Link>
           <div className='flex items-center justify-between w-full'>
             <div className='flex items-center space-x-1'>
-              <Link to='/' className=' text-base hover:underline'>
+              <Link
+                to={`/u/${posterPublicKey}`}
+                className=' text-base hover:underline'>
                 {post.user.nickname}
               </Link>
               <span className='middot' />
