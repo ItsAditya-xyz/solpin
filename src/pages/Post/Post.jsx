@@ -35,6 +35,7 @@ export default function Post() {
 
   useEffect(() => {
     async function initApp() {
+      setIsLoading(true);
       console.log("init app");
       const protocolOptions = {
         useIndexer: true,
@@ -71,7 +72,7 @@ export default function Post() {
         toast.error("Post not found");
       }
     }
-    if (postID && !postInfo) {
+    if (postID) {
       initApp();
     }
   }, [postID]);

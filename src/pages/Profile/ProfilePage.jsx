@@ -95,22 +95,24 @@ function ProfilePage(props) {
       <Navbar shouldShowWallet={true} />
       <div>
         {isLoading && (
-          <div className='flex justify-center items-center h-screen'>
+          <div className='flex justify-center items-center '>
             <Loader />
           </div>
         )}
         {!isLoading && userInfo && (
-          <div className='flex flex-col justify-center items-center mt-10'>
+          <div className='flex flex-col justify-center items-center mt-10 px-2'>
             <div className='flex  justify-center space-x-3'>
               <img
                 src={userInfo.avatar}
-                className='w-[120px] h-[120px] rounded-full'
+                className='w-[100px] h-[100px] sm:w-[120px] sm:h-[120px] rounded-full'
               />
               <div className='flex flex-col '>
                 <div className='flex justify-between items-center'>
-                  <p className='text-4xl font-bold mt-2'>{userInfo.nickname}</p>
+                  <p className='text-3xl sm:text-4xl font-bold mt-2'>
+                    {userInfo.nickname}
+                  </p>
                   <div className='mt-3'>
-                    <button className='px-4 py-2 border-[#512DA8] border-2 hover:bg-[#512DA8] hover:text-white rounded-full text-sm'>
+                    <button className='px-4 py-2 border-[#512DA8] border-2 hover:bg-[#512DA8] hover:text-white rounded-full text-sm ml-1 sm:ml-0'>
                       Folllow
                     </button>
                   </div>
@@ -118,13 +120,15 @@ function ProfilePage(props) {
                 <p className='text-xl text-gray-800 mt-3 ml-1 break-words'>
                   {userInfo.bio}
                 </p>
-                <div className='flex flex-row space-x-2 items-center mt-5'>
-                  <p className=' text-gray-700 '>
-                    {userInfo.following.length} Following
-                  </p>
-                  <p className=' text-gray-700  '>
-                    {userInfo.groups.length} Follows
-                  </p>
+                <div className='flex flex-col sm:flex-row space-x-2 sm:items-center mt-5'>
+                  <div className='flex flex-row space-x-2 items-start'>
+                    <p className=' text-gray-700 '>
+                      {userInfo.following.length} Following
+                    </p>
+                    <p className=' text-gray-700  '>
+                      {userInfo.groups.length} Follows
+                    </p>
+                  </div>
                   <button
                     className='px-2 py-1 bg-[#512DA8] hover:bg-[#3e237f] text-white rounded-md text-sm'
                     onClick={() => {
@@ -146,7 +150,7 @@ function ProfilePage(props) {
         )}
       </div>
       {!isLoading && !loadingPosts && !userContent && (
-        <div className='flex justify-center items-center h-screen mt-10'>
+        <div className='flex justify-center items-center  mt-10'>
           <p className='text-2xl font-bold'>No posts found</p>
         </div>
       )}
