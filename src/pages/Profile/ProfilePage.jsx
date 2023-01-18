@@ -95,7 +95,7 @@ function ProfilePage(props) {
       <Navbar shouldShowWallet={true} />
       <div>
         {isLoading && (
-          <div className='flex justify-center items-center '>
+          <div className='flex justify-center items-center mt-10'>
             <Loader />
           </div>
         )}
