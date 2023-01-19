@@ -1,17 +1,15 @@
 import { useState, useEffect, useContext } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import SplingContext from "../../Context/SplingContext/SplingContext";
 import { Loader } from "../../components/Loader";
 import { SocialProtocol } from "@spling/social-protocol";
-import { Link } from "react-router-dom";
-import Tippy from "@tippyjs/react";
 import toast, { Toaster } from "react-hot-toast";
 import { Keypair, PublicKey } from "@solana/web3.js";
-
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import PostCard from "../Landing/PostCard";
 import Navbar from "../../components/Navbar";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { protocolOptions } from "../../utils/constants";
 function ProfilePage(props) {
   const { publicKey } = useParams();
   const { publicKey: walletPublicKey } = useWallet();
@@ -20,15 +18,19 @@ function ProfilePage(props) {
   const SplingContextValue = useContext(SplingContext);
   const [socialProtocolValue, setSocialProtocolValue] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-
   const [loadingPosts, setLoadingPosts] = useState(true);
-
   const [userContent, setUserContent] = useState(null);
+
   useEffect(() => {
     if (!publicKey) return;
+
     setPublicKeyVal(publicKey);
   }, [publicKey]);
-
+  useEffect(() => {
+    if (!walletPublicKey) {
+      SplingContextValue.updateSelfInfo(null);
+    }
+  }, [walletPublicKey]);
   useEffect(() => {
     if (!publicKeyVal) return;
     if (userContent) return;
@@ -65,11 +67,6 @@ function ProfilePage(props) {
     }
 
     async function initSocialProtocol() {
-      const protocolOptions = {
-        useIndexer: true,
-        rpcUrl:
-          "https://rpc.helius.xyz/?api-key=d9bf1217-df34-4b46-a45c-3481095e3942",
-      };
       const sp = await new SocialProtocol(
         Keypair.generate(),
         null,
@@ -93,7 +90,7 @@ function ProfilePage(props) {
   return (
     <div className='w-full'>
       <Toaster />
-      <Navbar shouldShowWallet={true} />
+      <Navbar shouldShowWallet={true} socialProtocol={socialProtocolValue} />
       <div>
         {isLoading && (
           <div className='flex justify-center items-center mt-10'>

@@ -10,17 +10,15 @@ import SplingContext from "../../Context/SplingContext/SplingContext";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { SocialProtocol } from "@spling/social-protocol";
 import { convertBase64 } from "../../utils/functions";
+import { protocolOptions } from "../../utils/constants";
 function ProfileForm() {
   const SplingContextValue = useContext(SplingContext);
   const [profileImage, setProfileImage] = useState(default_profile_pic);
   const [profileImageFile, setProfileImageFile] = useState(null);
-  const [isUploadingProfileImage, setIsUploadingProfileImage] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
   const [profileDescription, setProfileDescription] = useState("");
   const [isUploadingProfilePic, setIsUploadingProfilePic] = useState(false);
-
   const [socialProtocol, setSocialProtocol] = useState(
     SplingContextValue.socialProtocol
   );
@@ -29,11 +27,6 @@ function ProfileForm() {
   const wallet = useWallet();
   useEffect(() => {
     async function initApp() {
-      const protocolOptions = {
-        useIndexer: true,
-        rpcUrl:
-          "https://solana-mainnet.g.alchemy.com/v2/2Y3ODmvjlgmxpBH-U7jOJlIy3nrtyt2p",
-      };
       const socialProtocolVal = await new SocialProtocol(
         wallet,
         null,

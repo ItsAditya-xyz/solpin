@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useState, useContext } from "react";
-import { BiImageAdd, BiQuestionMark, BiRocket } from "react-icons/bi";
-import Tippy from "@tippyjs/react";
-import { Loader } from "../../components/Loader";
+import { BiImageAdd, BiRocket } from "react-icons/bi";
 import { BsTrash } from "react-icons/bs";
 import toast, { Toaster } from "react-hot-toast";
 import SplingContext from "../../Context/SplingContext/SplingContext";
@@ -11,7 +9,7 @@ import { convertBase64 } from "../../utils/functions";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import { Keypair } from "@solana/web3.js";
-
+import { protocolOptions } from "../../utils/constants";
 export default function Create() {
   const SplingContextValue = useContext(SplingContext);
   const [socialProtocol, setSocialProtocol] = useState(
@@ -19,8 +17,6 @@ export default function Create() {
   );
   const { publicKey } = useWallet();
   const [postBody, setPostBody] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const inputFileRef = useRef(null);
   const fileInput = React.useRef(null);
   const [imageURL, setImageURL] = useState("");
   const [imageFile, setImageFile] = useState(null);
@@ -30,11 +26,6 @@ export default function Create() {
   const wallet = useWallet();
   useEffect(() => {
     async function initApp() {
-      const protocolOptions = {
-        useIndexer: true,
-        rpcUrl:
-          "https://solana-mainnet.g.alchemy.com/v2/2Y3ODmvjlgmxpBH-U7jOJlIy3nrtyt2p",
-      };
       const socialProtocolVal = await new SocialProtocol(
         wallet,
         null,
@@ -54,11 +45,6 @@ export default function Create() {
 
   useEffect(() => {
     async function initApp() {
-      const protocolOptions = {
-        useIndexer: true,
-        rpcUrl:
-          "https://solana-mainnet.g.alchemy.com/v2/2Y3ODmvjlgmxpBH-U7jOJlIy3nrtyt2p",
-      };
       const socialProtocolVal = await new SocialProtocol(
         Keypair.generate(),
         null,

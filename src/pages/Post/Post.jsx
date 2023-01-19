@@ -14,13 +14,12 @@ import { timeStampToTimeAgo } from "../../utils/functions";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import PostCard from "../Landing/PostCard";
 import Navbar from "../../components/Navbar";
-
+import { protocolOptions } from "../../utils/constants";
 export default function Post() {
   const { postID } = useParams();
   const BASE_URL = window.location.origin;
   const SplingContextValue = useContext(SplingContext);
   const { publicKey: walletPublicKey } = useWallet();
-
   const [postInfo, setPostInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [socialProtocolVal, setSocialProtocolVal] = useState(null);
@@ -28,21 +27,10 @@ export default function Post() {
 
   const [otherPostInfo, setOtherPostInfo] = useState(null);
   const [loadingOtherPosts, setLoadingOtherPosts] = useState(true);
-
-  const copied = () => {
-    console.log("copied");
-    toast.success("Copied post link to your clipboard to share");
-  };
-
   useEffect(() => {
     async function initApp() {
       setIsLoading(true);
       console.log("init app");
-      const protocolOptions = {
-        useIndexer: true,
-        rpcUrl:
-          "https://solana-mainnet.g.alchemy.com/v2/2Y3ODmvjlgmxpBH-U7jOJlIy3nrtyt2p",
-      };
       const socialProtocol = await new SocialProtocol(
         Keypair.generate(),
         null,
@@ -81,11 +69,6 @@ export default function Post() {
   const wallet = useWallet();
   useEffect(() => {
     async function initApp() {
-      const protocolOptions = {
-        useIndexer: true,
-        rpcUrl:
-          "https://solana-mainnet.g.alchemy.com/v2/2Y3ODmvjlgmxpBH-U7jOJlIy3nrtyt2p",
-      };
       const socialProtocolValue = await new SocialProtocol(
         wallet,
         null,
@@ -139,7 +122,10 @@ export default function Post() {
               <div className='content flex flex-col w-full lg:w-2/4 pt-8 pb-4'>
                 <div>
                   <div className='flex justify-between border-b-2 pb-4  px-8'>
-                    <ProfileCard userInfo={postInfo.user} selfPublicKey = {walletPublicKey} />
+                    <ProfileCard
+                      userInfo={postInfo.user}
+                      selfPublicKey={walletPublicKey}
+                    />
                     <Tippy content={"Copy Post Link"} placement='bottom'>
                       <button
                         className='hover:bg-[#080623] hover:text-white bg-gray-200 duration-75 delay-75 w-12 h-12 flex justify-center items-center text-center rounded-full'

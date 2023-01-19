@@ -6,13 +6,11 @@ import { Link } from "react-router-dom";
 import SignUpModal from "./modals/SignUpModal";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useState, useEffect } from "react";
-import { Keypair, PublicKey } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import SplingContext from "../Context/SplingContext/SplingContext";
 import { useContext } from "react";
-import { Menu, Transition } from "@headlessui/react";
 export default function Navbar({ shouldShowWallet, socialProtocol = null }) {
   const SplingContextValue = useContext(SplingContext);
-
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const { publicKey } = useWallet();
@@ -37,6 +35,10 @@ export default function Navbar({ shouldShowWallet, socialProtocol = null }) {
     }
     if (publicKey && socialProtocol && !profileInfo) {
       checkUser();
+    }else{
+      // console.log(publicKey)
+      // console.log(socialProtocol)
+      // console.log(profileInfo)
     }
   }, [publicKey]);
 

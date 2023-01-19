@@ -5,6 +5,7 @@ import SplingContext from "../../Context/SplingContext/SplingContext";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { SocialProtocol } from "@spling/social-protocol";
 import Navbar from "../../components/Navbar";
+import {protocolOptions} from "../../utils/constants";
 function CreateGroup() {
   const SplingContextValue = useContext(SplingContext);
   const [loading, setLoading] = useState(false);
@@ -15,11 +16,6 @@ function CreateGroup() {
   const wallet = useWallet();
   useEffect(() => {
     async function initApp() {
-      const protocolOptions = {
-        useIndexer: true,
-        rpcUrl:
-          "https://solana-mainnet.g.alchemy.com/v2/2Y3ODmvjlgmxpBH-U7jOJlIy3nrtyt2p",
-      };
       const socialProtocolVal = await new SocialProtocol(
         wallet,
         null,
@@ -37,9 +33,7 @@ function CreateGroup() {
   const createGroup = async () => {
     if (!wallet || typeof wallet == "undefined")
       return toast.error("Wallet not connected");
-
     if (!socialProtocol) return toast.error("Wallet not connected");
-
     const loadingToast = toast.loading("Creating Group");
     const group = await socialProtocol.createGroup(
       "solpin",
@@ -48,27 +42,23 @@ function CreateGroup() {
     );
     toast.dismiss(loadingToast);
     toast.success("Group Created");
-
     console.log(group);
   };
 
   const deleteGroup = async () => {
     if (!wallet || typeof wallet == "undefined")
       return toast.error("Wallet not connected");
-
     if (!socialProtocol) return toast.error("Wallet not connected");
     const loadingToast = toast.loading("Deleting Group");
     const group = await socialProtocol.deleteGroup();
     toast.dismiss(loadingToast);
     toast.success("Group Deleted");
-
     console.log(group);
   };
 
   return (
     <div>
     <Navbar/>
-
       <div className='flex   mx-auto  justify-center items-start w-full md:w-2/3 mb-24'>
         <Toaster />
         <div className='flex mx-auto  w-full space-y-6 md:flex-row md:space-x-10 md:space-y-0 my-28'>
@@ -84,7 +74,6 @@ function CreateGroup() {
               {loading && <Loader className='w-3.5 h-3.5' />}
               <span>Create Group</span>
             </button>
-
             <button
               onClick={() => deleteGroup()}
               className={` flex items-center justify-center space-x-2 font-medium text-white px-6 py-3 leading-none rounded-full buttonBG my-2 ${

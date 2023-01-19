@@ -8,7 +8,7 @@ import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import { useWallet } from "@solana/wallet-adapter-react";
 import Navbar from "../../components/Navbar";
 import { Link } from "react-router-dom";
-
+import { protocolOptions } from "../../utils/constants";
 function LandingPage() {
   const SplingContextValue = useContext(SplingContext);
   const [response, setResponse] = React.useState(null);
@@ -18,17 +18,11 @@ function LandingPage() {
   const wallet = useWallet();
   useEffect(() => {
     async function initApp() {
-      const protocolOptions = {
-        useIndexer: true,
-        rpcUrl:
-          "https://solana-mainnet.g.alchemy.com/v2/2Y3ODmvjlgmxpBH-U7jOJlIy3nrtyt2p",
-      };
       const socialProtocol = await new SocialProtocol(
         Keypair.generate(),
         null,
         protocolOptions
       ).init();
-
       setSocialProtocolVal(socialProtocol);
       console.log(socialProtocol);
 
@@ -52,11 +46,6 @@ function LandingPage() {
 
   useEffect(() => {
     async function initApp() {
-      const protocolOptions = {
-        useIndexer: true,
-        rpcUrl:
-          "https://solana-mainnet.g.alchemy.com/v2/2Y3ODmvjlgmxpBH-U7jOJlIy3nrtyt2p",
-      };
       const socialProtocolValue = await new SocialProtocol(
         wallet,
         null,
@@ -74,10 +63,7 @@ function LandingPage() {
 
   return (
     <div className='w-full'>
-      <Navbar
-        shouldShowWallet={false}
-        socialProtocol={socialProtocolVal}
-      />
+      <Navbar shouldShowWallet={false} socialProtocol={socialProtocolVal} />
       <div className='relative inline-flex justify-center rounded-full items-center w-full mt-24  px-2 mb-8 flex-col'>
         <div className='relative text-5xl md:py-10 text-gray-800 text-center font-extrabold  sm:text-5xl lg:text-6xl  rounded-full sm:w-[70%] '>
           <span className='brandGradientBg blur-2xl filter opacity-10 w-full h-full absolute inset-0 rounded-full leading-snug'></span>

@@ -6,6 +6,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { SocialProtocol } from "@spling/social-protocol";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
+import { protocolOptions } from "../../utils/constants";
 function Delete() {
   const SplingContextValue = useContext(SplingContext);
   const [loading, setLoading] = useState(false);
@@ -16,11 +17,6 @@ function Delete() {
   const wallet = useWallet();
   useEffect(() => {
     async function initApp() {
-      const protocolOptions = {
-        useIndexer: true,
-        rpcUrl:
-          "https://solana-mainnet.g.alchemy.com/v2/2Y3ODmvjlgmxpBH-U7jOJlIy3nrtyt2p",
-      };
       const socialProtocolVal = await new SocialProtocol(
         wallet,
         null,
@@ -38,21 +34,17 @@ function Delete() {
   const deleteProfile = async () => {
     if (!wallet || typeof wallet == "undefined")
       return toast.error("Wallet not connected");
-
     if (!socialProtocol) return toast.error("Wallet not connected");
-
     const loadingToast = toast.loading("Deleting Profile...");
     const user = await socialProtocol.deleteUser();
     toast.dismiss(loadingToast);
     toast.success("Profile Deleted");
-
     console.log(user);
   };
 
   return (
     <div>
       <Navbar shouldShowWallet={true} socialProtocol={socialProtocol} />
-
       <div className='flex   mx-auto  justify-center items-start w-full md:w-2/3 mb-24'>
         <Toaster />
         <div className='flex mx-auto  w-full space-y-6 md:flex-row md:space-x-10 md:space-y-0 my-28'>
