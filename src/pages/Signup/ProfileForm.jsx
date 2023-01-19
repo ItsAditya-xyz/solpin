@@ -11,7 +11,9 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { SocialProtocol } from "@spling/social-protocol";
 import { convertBase64 } from "../../utils/functions";
 import { protocolOptions } from "../../utils/constants";
+import { useNavigate } from "react-router-dom";
 function ProfileForm() {
+  const navigate = useNavigate();
   const SplingContextValue = useContext(SplingContext);
   const [profileImage, setProfileImage] = useState(default_profile_pic);
   const [profileImageFile, setProfileImageFile] = useState(null);
@@ -68,6 +70,12 @@ function ProfileForm() {
       if (user) {
         toast.dismiss(toastID);
         toast.success("Profile created successfully");
+
+        //after 2 seconds redirect to home
+        setTimeout(() => {
+          SplingContextValue.updateSelfInfo(user);
+          navigate("/");
+        }, 2000);
       } else {
         toast.dismiss(toastID);
         toast.error("Something went wrong");
