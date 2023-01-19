@@ -11,7 +11,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { SocialProtocol } from "@spling/social-protocol";
 import { convertBase64 } from "../../utils/functions";
 import { protocolOptions } from "../../utils/constants";
-import { useNavigate } from "react-router-dom";
+
 function ProfileForm() {
   const navigate = useNavigate();
   const SplingContextValue = useContext(SplingContext);

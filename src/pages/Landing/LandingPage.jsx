@@ -27,7 +27,7 @@ function LandingPage() {
       setSocialProtocolVal(socialProtocol);
       console.log(socialProtocol);
 
-      const posts = await socialProtocol.getAllPosts(12, 20);
+      const posts = await socialProtocol.getAllPosts(12, 30);
       const finalResult = [];
       //loop through userPosts and add that post to finalResult only when media's array length is greater than 0
       for (let i = 0; i < posts.length; i++) {
