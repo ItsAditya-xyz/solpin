@@ -7,13 +7,14 @@ import { Link } from "react-router-dom";
 import Tippy from "@tippyjs/react";
 import toast, { Toaster } from "react-hot-toast";
 import { Keypair, PublicKey } from "@solana/web3.js";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import PostCard from "../Landing/PostCard";
 import Navbar from "../../components/Navbar";
+import { useWallet } from "@solana/wallet-adapter-react";
 function ProfilePage(props) {
   const { publicKey } = useParams();
+  const { publicKey: walletPublicKey } = useWallet();
   const [publicKeyVal, setPublicKeyVal] = useState(null);
   const [userInfo, setUserInfo] = useState(null);
   const SplingContextValue = useContext(SplingContext);
@@ -111,11 +112,13 @@ function ProfilePage(props) {
                   <p className='text-3xl sm:text-4xl font-bold mt-2'>
                     {userInfo.nickname}
                   </p>
-                  <div className='mt-3 ml-2 sm:ml-0'>
-                    <button className='px-4 py-2 border-[#512DA8] border-2 hover:bg-[#512DA8] hover:text-white rounded-full text-sm ml-1 sm:ml-0'>
-                      Folllow
-                    </button>
-                  </div>
+                  {walletPublicKey != publicKeyVal && (
+                    <div className='mt-3 ml-2 sm:ml-0'>
+                      <button className='px-4 py-2 border-[#512DA8] border-2 hover:bg-[#512DA8] hover:text-white rounded-full text-sm ml-1 sm:ml-0'>
+                        Folllow
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <p className='text-xl text-gray-800 mt-3 ml-1 break-words'>
                   {userInfo.bio}
@@ -126,7 +129,7 @@ function ProfilePage(props) {
                       {userInfo.following.length} Following
                     </p>
                     <p className=' text-gray-700  '>
-                      {userInfo.groups.length} Follows
+                      {userInfo.groups.length} Followers
                     </p>
                   </div>
                   <button
@@ -157,7 +160,9 @@ function ProfilePage(props) {
 
       {!isLoading && !loadingPosts && userContent && (
         <div className='mt-10'>
-          <p className='text-2xl font-bold text-center my-3'>Posts by {userInfo.nickname}</p>
+          <p className='text-2xl font-bold text-center my-3'>
+            Posts by {userInfo.nickname}
+          </p>
           <div className='w-full mb-8 mt-1'>
             <div className='h-1 mx-auto brandGradientBg w-72 opacity-25 my-0 py-0 rounded-t'></div>
           </div>

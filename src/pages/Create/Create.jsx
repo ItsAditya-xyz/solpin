@@ -10,17 +10,22 @@ import { SocialProtocol } from "@spling/social-protocol";
 import { convertBase64 } from "../../utils/functions";
 import { Link } from "react-router-dom";
 import Navbar from "../../components/Navbar";
+import { Keypair } from "@solana/web3.js";
+
 export default function Create() {
   const SplingContextValue = useContext(SplingContext);
   const [socialProtocol, setSocialProtocol] = useState(
     SplingContextValue.socialProtocol
   );
+  const { publicKey } = useWallet();
   const [postBody, setPostBody] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const inputFileRef = useRef(null);
   const fileInput = React.useRef(null);
   const [imageURL, setImageURL] = useState("");
   const [imageFile, setImageFile] = useState(null);
+
+  const [postCreationDone, setPostCreationDone] = useState(false);
 
   const wallet = useWallet();
   useEffect(() => {
@@ -41,9 +46,33 @@ export default function Create() {
     }
     if (wallet?.publicKey && typeof wallet !== "undefined") {
       initApp();
+      console.log("spling init");
+    } else {
+      console.log("spling not init");
     }
   }, [wallet]);
 
+  useEffect(() => {
+    async function initApp() {
+      const protocolOptions = {
+        useIndexer: true,
+        rpcUrl:
+          "https://solana-mainnet.g.alchemy.com/v2/2Y3ODmvjlgmxpBH-U7jOJlIy3nrtyt2p",
+      };
+      const socialProtocolVal = await new SocialProtocol(
+        Keypair.generate(),
+        null,
+        protocolOptions
+      ).init();
+      console.log(socialProtocolVal);
+      SplingContextValue.updateSocialProtocol(socialProtocol);
+      setSocialProtocol(socialProtocolVal);
+    }
+    if (!socialProtocol) {
+      initApp();
+      console.log("spling init");
+    }
+  }, [socialProtocol]);
   const handleImageUpload = async (file) => {
     try {
       if (!wallet?.publicKey) {
@@ -65,10 +94,10 @@ export default function Create() {
     }
   };
   const submitPost = async () => {
-    if (!wallet || typeof wallet == "undefined")
+    if (!wallet?.publicKey || typeof wallet == "undefined")
       return toast.error("Wallet not connected");
-    if (!postBody) return toast.error("Please enter a Image Details.");
     if (!imageFile) return toast.error("Please upload an image file");
+    if (!postBody) return toast.error("Please enter a Image Details.");
 
     const toastID = toast.loading(
       "Creating Post...Please approve transactions"
@@ -86,6 +115,7 @@ export default function Create() {
       if (post) {
         toast.dismiss(toastID);
         toast.success("Post created successfully");
+        setPostCreationDone(true);
         setImageFile(null);
         setImageURL("");
         setPostBody("");
@@ -114,11 +144,54 @@ export default function Create() {
 
   return (
     <div>
-      <Navbar shouldShowWallet={true} />
+      <Navbar shouldShowWallet={false} socialProtocol={socialProtocol} />
       <Toaster />
+      <div className='flex justify-center mx-auto'>
+        <div>
+          <div className='relative text-3xl md:py-10 text-gray-800 text-center font-extrabold  sm:text-5xl lg:text-4xl  rounded-full sm:w-[70%] flex justify-center mx-auto px-2 '>
+            <span className='brandGradientBg blur-2xl filter opacity-10 w-full h-full absolute inset-0 rounded-full leading-snug'></span>
+            <span className='md:px-5 leading-snug'>
+              <span className='text-transparent bg-clip-text brandGradientBg'>
+                {" "}
+                Create
+              </span>{" "}
+              a high-performing post to get your photos across!
+            </span>
+          </div>
+          <div className='flex justify-center mx-auto px-2 '>
+            <div className='bg-yellow-200 px-4 py-1 border-l-2 mb-4 mt-3 border-yellow-500'>
+              Make sure you have enough $SOL and $SHDW tokens in your wallet to
+              cover the gas fee.
+              <br></br>
+              You can buy some $SHDW tokens from{" "}
+              <a
+                href='https://jup.ag/swap/SOL-SHDW'
+                target={"_blank"}
+                className='text-blue-400 underline'>
+                here
+              </a>
+              . We are working to make everything gasless
+            </div>
+          </div>
+
+          {postCreationDone && (
+            <div className='flex justify-center mx-auto px-2 my-2'>
+              <div className='bg-green-500 px-4 py-1 border-l-2 mb-4 mt-3 border-green-700 text-white'>
+                View your Posts
+                <Link
+                  to={`/u/${publicKey}`}
+                  className='text-blue-100 underline'>
+                  {" "}
+                  here
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
       <div className='sm:w-3/4 md:w-3/5 lg:w-1/2 mx-auto my-3 '>
         <textarea
-          className='focus:ring-0 focus:outline-none outline-none darkenBg darkenHoverBg border dark:border-[#2D2D33] hover:dark:border-[#43434d] border-gray-200 hover:border-gray-200 resize-none w-full rounded-lg heading px-4 py-2'
+          className='focus:ring-0 h-28 focus:outline-none outline-none darkenBg darkenHoverBg border dark:border-[#2D2D33] hover:dark:border-[#43434d] border-gray-200 hover:border-gray-200 resize-none w-full rounded-lg heading px-4 py-2'
           placeholder='About the photo...'
           value={postBody}
           onChange={(e) => setPostBody(e.target.value)}

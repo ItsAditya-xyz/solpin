@@ -1,7 +1,7 @@
 import React from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
-export default function ProfileCard({ userInfo }) {
+export default function ProfileCard({ userInfo, selfPublicKey }) {
   const publicKey = userInfo.publicKey.toString();
   return (
     <div className='flex flex-col '>
@@ -15,11 +15,13 @@ export default function ProfileCard({ userInfo }) {
               className='text-xl font-bold mt-2 hover:underline'>
               {userInfo.nickname}{" "}
             </Link>
-            <div className='mt-3'>
-              <button className='px-3 py-1 border-[#512DA8] border-2 hover:bg-[#512DA8] hover:text-white rounded-full text-sm'>
-                Folllow
-              </button>
-            </div>
+            {selfPublicKey != publicKey && (
+              <div className='mt-3'>
+                <button className='px-3 py-1 border-[#512DA8] border-2 hover:bg-[#512DA8] hover:text-white rounded-full text-sm'>
+                  Folllow
+                </button>
+              </div>
+            )}
           </div>
 
           <div className='flex flex-row space-x-2 items-center mt-3'>

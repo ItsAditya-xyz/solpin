@@ -2,7 +2,6 @@ import { useState, useEffect, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import SplingContext from "../../Context/SplingContext/SplingContext";
 import { SocialProtocol } from "@spling/social-protocol";
-import { Link } from "react-router-dom";
 import { Keypair, PublicKey } from "@solana/web3.js";
 import { Loader } from "../../components/Loader";
 import { useWallet } from "@solana/wallet-adapter-react";
@@ -15,11 +14,13 @@ import { timeStampToTimeAgo } from "../../utils/functions";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import PostCard from "../Landing/PostCard";
 import Navbar from "../../components/Navbar";
+
 export default function Post() {
   const { postID } = useParams();
   const BASE_URL = window.location.origin;
-
   const SplingContextValue = useContext(SplingContext);
+  const { publicKey: walletPublicKey } = useWallet();
+
   const [postInfo, setPostInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [socialProtocolVal, setSocialProtocolVal] = useState(null);
@@ -138,7 +139,7 @@ export default function Post() {
               <div className='content flex flex-col w-full lg:w-2/4 pt-8 pb-4'>
                 <div>
                   <div className='flex justify-between border-b-2 pb-4  px-8'>
-                    <ProfileCard userInfo={postInfo.user} />
+                    <ProfileCard userInfo={postInfo.user} selfPublicKey = {walletPublicKey} />
                     <Tippy content={"Copy Post Link"} placement='bottom'>
                       <button
                         className='hover:bg-[#080623] hover:text-white bg-gray-200 duration-75 delay-75 w-12 h-12 flex justify-center items-center text-center rounded-full'

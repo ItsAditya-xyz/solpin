@@ -11,21 +11,23 @@ import Delete from "./pages/DeleteProfile/Delete";
 import Create from "./pages/Create/Create";
 import CreateGroup from "./pages/Group/CreateGroup";
 import Post from "./pages/Post/Post";
-
+import SplingState from "./Context/SplingContext/SplingState";
 function App() {
   return (
     <WalletContextProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path='/' element={<LandingPage />} />
-          <Route path='/sign-up' element={<SignUp />} />
-          <Route path='/u/:publicKey' element={<ProfilePage />} />
-          <Route path='/delete' element={<Delete />} />
-          <Route path='/create' element={<Create />} />
-          <Route path='/create-group' element={<CreateGroup />} />
-          <Route path = '/post/:postID' element = {<Post/>} />
-        </Routes>
-      </BrowserRouter>
+      <SplingState>
+        <BrowserRouter>
+          <Routes>
+            <Route path='/' element={<LandingPage />} />
+            <Route path='/sign-up' element={<SignUp />} />
+            <Route path='/u/:publicKey' element={<ProfilePage />} />
+            <Route path='/delete' element={<Delete />} />
+            <Route path='/create' element={<Create />} />
+            <Route path='/create-group' element={<CreateGroup />} />
+            <Route path='/post/:postID' element={<Post />} />
+          </Routes>
+        </BrowserRouter>
+      </SplingState>
     </WalletContextProvider>
   );
 }

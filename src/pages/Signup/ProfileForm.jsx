@@ -9,7 +9,7 @@ import default_profile_pic from "../../assets/default_profile_pic.png";
 import SplingContext from "../../Context/SplingContext/SplingContext";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { SocialProtocol } from "@spling/social-protocol";
-import {convertBase64} from "../../utils/functions";
+import { convertBase64 } from "../../utils/functions";
 function ProfileForm() {
   const SplingContextValue = useContext(SplingContext);
   const [profileImage, setProfileImage] = useState(default_profile_pic);
@@ -52,11 +52,13 @@ function ProfileForm() {
     if (!wallet || typeof wallet == "undefined")
       return toast.error("Wallet not connected");
     if (!username) return toast.error("Please enter a username");
-    if (!profileImage) return toast.error("Please upload a profile image");
+    if (!profileImageFile) return toast.error("Please upload a profile image");
     if (!profileDescription)
       return toast.error("Please enter a profile description");
 
-    const toastID = toast.loading("Creating your profile. This may take a while...");
+    const toastID = toast.loading(
+      "Creating your profile. This may take a while..."
+    );
     try {
       let bs64 = await convertBase64(profileImageFile);
 
@@ -78,6 +80,7 @@ function ProfileForm() {
         toast.error("Something went wrong");
       }
     } catch (err) {
+      console.log(err);
       toast.dismiss(toastID);
       toast.error("Something went wrong. Please Try again..");
     }

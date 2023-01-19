@@ -38,7 +38,7 @@ function Delete() {
   const deleteProfile = async () => {
     if (!wallet || typeof wallet == "undefined")
       return toast.error("Wallet not connected");
-    
+
     if (!socialProtocol) return toast.error("Wallet not connected");
 
     const loadingToast = toast.loading("Deleting Profile...");
@@ -51,7 +51,7 @@ function Delete() {
 
   return (
     <div>
-    <Navbar/>
+      <Navbar shouldShowWallet={true} socialProtocol={socialProtocol} />
 
       <div className='flex   mx-auto  justify-center items-start w-full md:w-2/3 mb-24'>
         <Toaster />

@@ -1,8 +1,5 @@
 import React, { useEffect, useContext } from "react";
-import styles from "../../styles/Home.module.css";
 import { SocialProtocol } from "@spling/social-protocol";
-import logo from "../../assets/logo.svg";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import SplingContext from "../../Context/SplingContext/SplingContext";
 import { Keypair } from "@solana/web3.js";
 import { Loader } from "../../components/Loader";
@@ -31,6 +28,8 @@ function LandingPage() {
         null,
         protocolOptions
       ).init();
+
+      setSocialProtocolVal(socialProtocol);
       console.log(socialProtocol);
 
       const posts = await socialProtocol.getAllPosts(12, 20);
@@ -75,7 +74,10 @@ function LandingPage() {
 
   return (
     <div className='w-full'>
-      <Navbar shouldShowWallet={shuoldShowWallet} />
+      <Navbar
+        shouldShowWallet={false}
+        socialProtocol={socialProtocolVal}
+      />
       <div className='relative inline-flex justify-center rounded-full items-center w-full mt-24  px-2 mb-8 flex-col'>
         <div className='relative text-5xl md:py-10 text-gray-800 text-center font-extrabold  sm:text-5xl lg:text-6xl  rounded-full sm:w-[70%] '>
           <span className='brandGradientBg blur-2xl filter opacity-10 w-full h-full absolute inset-0 rounded-full leading-snug'></span>
@@ -101,7 +103,7 @@ function LandingPage() {
         </div>
       </div>
       <div>
-      <div className='my-3 mb-5 '>
+        <div className='my-3 mb-5 '>
           <p className='text-gray-800 text-center text-2xl sm:text-4xl font-bold'>
             Trending Posts on Solpin
           </p>
@@ -109,13 +111,13 @@ function LandingPage() {
             <div className='h-1 mx-auto brandGradientBg w-72 opacity-25 my-0 py-0 rounded-t'></div>
           </div>
         </div>
-        
+
         {isLoading && (
           <div className='flex justify-center items-center mx-auto my-4'>
             <Loader />
           </div>
         )}
-       
+
         {!isLoading && (
           <div className=''>
             <ResponsiveMasonry
