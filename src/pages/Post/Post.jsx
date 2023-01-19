@@ -131,7 +131,7 @@ export default function Post() {
                         className='hover:bg-[#080623] hover:text-white bg-gray-200 duration-75 delay-75 w-12 h-12 flex justify-center items-center text-center rounded-full'
                         onClick={() => {
                           navigator.clipboard.writeText(
-                            `${BASE_URL}/post/${postInfo.id}`
+                            `${BASE_URL}/post/${postInfo.postId}`
                           );
                           toast.success("Copied post link to your clipboard!");
                         }}>
