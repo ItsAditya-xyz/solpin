@@ -107,11 +107,11 @@ export default function Post() {
                           filter: "blur(3px)",
                           opacity: ".2",
                         }}
-                        className='w-full h-full backdrop-xl backdrop-blur-md p-4 absolute top-0 left-0 rounded-bl-3xl rounded-tl-3xl'
+                        className='w-full h-full backdrop-xl backdrop-blur-md p-4 absolute top-0 left-0 rounded-bl-3xl rounded-tl-3xl '
                       />
 
                       <img
-                        className='rounded-3xl shadow-[rgba(13,_38,_76,_0.19)_0px_9px_20px] w-full object-cover'
+                        className='rounded-3xl shadow-[rgba(13,_38,_76,_0.19)_0px_9px_20px] w-full object-cover z-10'
                         alt={`Pin by ${postInfo.user.nickname}`}
                         src={postInfo.media[0].file}
                       />
