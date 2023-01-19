@@ -65,7 +65,6 @@ function ProfilePage(props) {
         toast.error("Something went wrong. Please try again later.");
       }
     }
-
     async function initSocialProtocol() {
       const sp = await new SocialProtocol(
         Keypair.generate(),
