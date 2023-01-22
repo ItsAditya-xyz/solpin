@@ -10,6 +10,7 @@ import Navbar from "../../components/Navbar";
 import SignUpModal from "../../components/modals/SignUpModal";
 import { protocolOptions } from "../../utils/constants";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { toast } from "react-hot-toast";
 function LandingPage() {
   const SplingContextValue = useContext(SplingContext);
   const [response, setResponse] = useState(null);
@@ -29,19 +30,22 @@ function LandingPage() {
       ).init();
       setSocialProtocolVal(socialProtocol);
       console.log(socialProtocol);
-
-      const posts = await socialProtocol.getAllPosts(12, 20);
-      const finalResult = [];
-      //loop through userPosts and add that post to finalResult only when media's array length is greater than 0
-      for (let i = 0; i < posts.length; i++) {
-        if (posts[i].media.length > 0) {
-          finalResult.push(posts[i]);
+      try {
+        const posts = await socialProtocol.getAllPosts(12, 20);
+        const finalResult = [];
+        //loop through userPosts and add that post to finalResult only when media's array length is greater than 0
+        for (let i = 0; i < posts.length; i++) {
+          if (posts[i].media.length > 0) {
+            finalResult.push(posts[i]);
+          }
         }
-      }
 
-      console.log(finalResult);
-      setResponse(finalResult);
-      setIsLoading(false);
+        console.log(finalResult);
+        setResponse(finalResult);
+        setIsLoading(false);
+      } catch (err) {
+        toast.error("Something went wrong. Please reload the page.");
+      }
     }
     if (!response) {
       initApp();

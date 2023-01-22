@@ -14,3 +14,5 @@ TODO:
 
 1. Add comment
 2. Comment section in /post
+3. Follow/Unfollow user
+3. Create button at bottom for mobilie 
