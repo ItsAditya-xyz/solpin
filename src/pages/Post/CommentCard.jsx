@@ -10,7 +10,7 @@ function CommentCard({ comment, currentUserID, deleteComment }) {
   const nickname = comment.user.nickname;
 
   return (
-    <div className="flex flex-col shadow-sm">
+    <div className="flex flex-col">
       <div className="flex w-full py-4 px-2 space-x-1">
         <Link
           to={`/u/${posterPublicKey}`}

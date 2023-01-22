@@ -452,11 +452,11 @@ export default function Post() {
                 {!loadingComments && (
                   <div className="px-2">
                     <p className="text-2xl font-semibold">
-                      {commentList.length} Comments
+                      {commentList.length} Comment{commentList.length > 1? "s" : ""}
                     </p>
                   </div>
                 )}
-                <div className=" my-1 flex flex-col justify-end ">
+                <div className=" my-1 flex flex-col justify-end px-4 ">
                   {commentList.map((comment) => {
                     return (
                       <CommentCard
