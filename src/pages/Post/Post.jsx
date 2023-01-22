@@ -17,6 +17,7 @@ import PostCard from "../Landing/PostCard";
 import Navbar from "../../components/Navbar";
 import { protocolOptions } from "../../utils/constants";
 import defaultPostPic from "../../assets/noImage.png";
+import CommentCard from "./CommentCard";
 export default function Post() {
   const { postID } = useParams();
   const navigate = useNavigate();
@@ -37,6 +38,11 @@ export default function Post() {
   const currentLoggedInUser = SplingContextValue.selfInfo;
   const [currentUserID, setCurrentUserID] = useState(null);
   const [currentFollowing, setCurrentFollowing] = useState([]);
+
+  const [commentValue, setCommentValue] = useState("");
+
+  const [commentList, setCommentList] = useState([]);
+  const [loadingComments, setLoadingComments] = useState(true);
   useEffect(() => {
     if (currentLoggedInUser) {
       setCurrentUserID(currentLoggedInUser.userId);
@@ -75,11 +81,18 @@ export default function Post() {
         }
         setOtherPostInfo(finalResult);
         setLoadingOtherPosts(false);
+        const userComments = await socialProtocol.getAllPostReplies(
+          postVal.postId,
+          10
+        );
+        setCommentList(userComments);
+        setLoadingComments(false);
+        console.log(userComments);
       } else {
         toast.error("Post not found");
       }
     }
-    if (postID) {
+    if (postID && !postInfo) {
       try {
         initApp();
       } catch (err) {
@@ -253,6 +266,76 @@ export default function Post() {
     }
   };
 
+  const handleComment = async () => {
+    const postID = postInfo.postId;
+    if (!walletPublicKey) {
+      toast.error("Please connect wallet first");
+      return;
+    }
+    if (isLiking) {
+      toast.error("Please wait for the previous request to complete");
+      return;
+    }
+    if (!commentValue) return toast.error("Please enter a comment");
+    const waitingToast = toast.loading("Waiting for transaction approval...");
+    setIsLiking(true);
+    try {
+      const commentResult = await socialProtocolVal.createPostReply(
+        postID,
+        commentValue
+      );
+      if (commentResult) {
+        toast.dismiss(waitingToast);
+        //add commentResult to the commentList
+        console.log(commentResult);
+        let tempResult = commentResult;
+        tempResult.user.publicKey = currentLoggedInUser.publicKey.toString();
+        setCommentList([...commentList, tempResult]);
+        toast.success("Commented successfully");
+        setCommentValue("");
+      } else {
+        toast.dismiss(waitingToast);
+        toast.error("Something went wrong. Please try again later.");
+      }
+      setIsLiking(false);
+    } catch (err) {
+      toast.dismiss(waitingToast);
+      toast.error("Something went wrong. Please try again later.");
+      setIsLiking(false);
+    }
+  };
+
+  const deleteComment = async (comment) => {
+    if (!walletPublicKey) {
+      toast.error("Please connect wallet first");
+      return;
+    }
+    if (isLiking) {
+      toast.error("Please wait for the previous request to complete");
+      return;
+    }
+    const waitingToast = toast.loading("Waiting for transaction approval...");
+    setIsLiking(true);
+    try {
+      const deleteResult = await socialProtocolVal.deletePostReply(
+        comment.publicKey
+      );
+
+      //remove comment from the commentList
+      const updatedCommentList = commentList.filter(
+        (commentItem) => commentItem.publicKey !== comment.publicKey
+      );
+      setCommentList(updatedCommentList);
+
+      toast.dismiss(waitingToast);
+      toast.success("Comment deleted successfully");
+      setIsLiking(false);
+    } catch (err) {
+      toast.dismiss(waitingToast);
+      toast.error("Something went wrong. Please try again later.");
+      setIsLiking(false);
+    }
+  };
   return (
     <div className="w-full">
       <Toaster />
@@ -277,6 +360,7 @@ export default function Post() {
                           backgroundImage: `url(${postInfo.media[0].file})`,
                           filter: "blur(3px)",
                           opacity: ".2",
+                          backgroundRepeat: "no-repeat",
                         }}
                         className="w-full h-full backdrop-xl backdrop-blur-md p-4 absolute top-0 left-0 rounded-bl-3xl rounded-tl-3xl "
                       />
@@ -336,10 +420,10 @@ export default function Post() {
                   </div>
                 </div>
 
-                <div className="mt-4 break-words body px-8">
+                <div className="mt-3 break-words body px-8">
                   {postInfo.title}
                 </div>
-                <div className="border-t-2 my-8">
+                <div className="border-t-2 mt-8 mb-3">
                   <BottomMeta
                     post={postInfo}
                     timesAgo={timeAgo}
@@ -347,9 +431,43 @@ export default function Post() {
                     currentUserID={currentUserID}
                   />
                 </div>
-
-                {/* <MetaCard post={post} />
-                <Comments post={post} /> */}
+                <div className="border-t-2 my-1 flex flex-col justify-end ">
+                  <textarea
+                    className="bg-gray-50 w-full resize-none h-28 border-1 hover:border-none active:border-none active:outline-none p-4 rounded-lg focus:outline-none   focus:border-transparent"
+                    placeholder="Write a comment..."
+                    value={commentValue}
+                    onChange={(e) => {
+                      setCommentValue(e.target.value);
+                    }}
+                  />
+                  <div className="border-b-2 flex justify-end items-center px-2 my-2 ">
+                    <button
+                      className="bg-[#512DA8] hover:bg-[#4a289a] mb-2  border-1 hover:border-none active:border-none active:outline-none px-4 py-2 rounded-lg focus:outline-none focus:ring-2  focus:border-transparent text-white"
+                      onClick={handleComment}
+                    >
+                      Comment
+                    </button>
+                  </div>
+                </div>
+                {!loadingComments && (
+                  <div className="px-2">
+                    <p className="text-2xl font-semibold">
+                      {commentList.length} Comments
+                    </p>
+                  </div>
+                )}
+                <div className=" my-1 flex flex-col justify-end ">
+                  {commentList.map((comment) => {
+                    return (
+                      <CommentCard
+                        key={comment.timestamp}
+                        comment={comment}
+                        currentUserID={currentUserID}
+                        deleteComment={deleteComment}
+                      />
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>

@@ -10,8 +10,6 @@ export default function ProfileCard({
   posterID
 }) {
 
-  console.log(posterID);
-  console.log(currentFollowing);
 
   const publicKey = userInfo.publicKey.toString();
   return (
