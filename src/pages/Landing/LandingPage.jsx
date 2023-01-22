@@ -45,7 +45,7 @@ function LandingPage() {
         setResponse(finalResult);
         setIsLoading(false);
       } catch (err) {
-        toast.error("Something went wrong. Please reload the page.");
+        toast.error(`Something went wrong. Please reload the page. ${err.message}`);
       }
     }
     if (!response) {
@@ -102,7 +102,7 @@ function LandingPage() {
       }
       setResponse([...response, ...finalResult]);
     } catch (err) {
-      console.log(err);
+     toast.error(`Something went wrong.${err.message}`);
     }
   };
 
