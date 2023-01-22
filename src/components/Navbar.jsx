@@ -66,11 +66,11 @@ export default function Navbar({ shouldShowWallet, socialProtocol = null }) {
         setShowModal={setShowModal}
         useWallet={useWallet}
       />
-      <div className="flex items-center justify-cente space-x-1">
+      <div className="flex items-center  space-x-1">
       {profileInfo && (
-        <div className="flex items-center justify-cente space-x-1">
+        <div className="flex items-center space-x-1">
         <Link
-          className="bg-[#512DA8] text-white mx-auto lg:mx-0 hover:bg-[#5D3DAA]  rounded my-2 py-3 px-9 shadow-lg w-70 hover:scale-105 text-base hidden sm:block"
+          className="bg-[#512DA8] text-white mx-auto lg:mx-0 hover:bg-[#5D3DAA]  rounded my-2 py-3 px-9 shadow-lg w-70 hover:scale-105 text-base sm:block"
           to="/create"
         >
           Create

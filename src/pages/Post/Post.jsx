@@ -92,7 +92,7 @@ export default function Post() {
         toast.error("Post not found");
       }
     }
-    if (postID && !postInfo) {
+    if (postID ) {
       try {
         initApp();
       } catch (err) {
