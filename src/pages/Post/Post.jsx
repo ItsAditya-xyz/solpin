@@ -36,9 +36,11 @@ export default function Post() {
 
   const currentLoggedInUser = SplingContextValue.selfInfo;
   const [currentUserID, setCurrentUserID] = useState(null);
+  const [currentFollowing, setCurrentFollowing] = useState([]);
   useEffect(() => {
     if (currentLoggedInUser) {
       setCurrentUserID(currentLoggedInUser.userId);
+      setCurrentFollowing(currentLoggedInUser.following);
     }
     console.log(currentLoggedInUser);
   }, [currentLoggedInUser]);
@@ -78,10 +80,9 @@ export default function Post() {
       }
     }
     if (postID) {
-      try{
+      try {
         initApp();
-      }
-      catch(err){
+      } catch (err) {
         toast.error(`Something went wrong. Please try again ${err.message}`);
       }
     }
@@ -211,6 +212,47 @@ export default function Post() {
       setIsLiking(false);
     }
   };
+
+  const followUser = async (isFollow) => {
+    console.log("in it");
+
+    if (!walletPublicKey) {
+      toast.error("Please connect wallet first");
+      return;
+    }
+    if (isLiking) {
+      toast.error("Please wait for the previous request to complete");
+      return;
+    }
+
+    const waitingToast = toast.loading("Waiting for transaction approval...");
+    setIsLiking(true);
+    const userID = postInfo.userId;
+    try {
+      if (isFollow) {
+        const followResult = await socialProtocolVal.followUser(userID);
+        setCurrentFollowing([...currentFollowing, userID]);
+
+        toast.dismiss(waitingToast);
+        toast.success("Followed successfully");
+      } else {
+        const followResult = await socialProtocolVal.unfollowUser(userID);
+        setCurrentFollowing(
+          currentFollowing.filter((userId) => userId !== userID)
+        );
+
+        toast.dismiss(waitingToast);
+        toast.success("Unfollowed successfully");
+      }
+
+      setIsLiking(false);
+    } catch (err) {
+      toast.dismiss(waitingToast);
+      toast.error("Something went wrong. Please try again later.");
+      setIsLiking(false);
+    }
+  };
+
   return (
     <div className="w-full">
       <Toaster />
@@ -258,6 +300,9 @@ export default function Post() {
                     <ProfileCard
                       userInfo={postInfo.user}
                       selfPublicKey={walletPublicKey}
+                      followFunction={followUser}
+                      currentFollowing={currentFollowing}
+                      posterID={postInfo.userId}
                     />
                     <div className="flex items-center space-x-1 flex-shrink-0">
                       <Tippy content={"Copy Post Link"} placement="bottom">
