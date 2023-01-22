@@ -21,16 +21,46 @@ function ProfilePage(props) {
   const [loadingPosts, setLoadingPosts] = useState(true);
   const [userContent, setUserContent] = useState(null);
 
+  const [isLiking, setIsLiking] = useState(false);
+  const currentLoggedInUser = SplingContextValue.selfInfo;
+  const [currentUserID, setCurrentUserID] = useState(null);
+  const wallet = useWallet();
+  useEffect(() => {
+    if (currentLoggedInUser) {
+      setCurrentUserID(currentLoggedInUser.userId);
+    }
+    console.log(currentLoggedInUser);
+  }, [currentLoggedInUser]);
+
+
   useEffect(() => {
     if (!publicKey) return;
-
     setPublicKeyVal(publicKey);
   }, [publicKey]);
+
+
   useEffect(() => {
+
+    async function initApp() {
+      const socialProtocolValue = await new SocialProtocol(
+        wallet,
+        null,
+        protocolOptions
+      ).init();
+      console.log(socialProtocolValue);
+      SplingContextValue.updateSocialProtocol(socialProtocolValue);
+      setSocialProtocolValue(socialProtocolValue);
+    }
+
     if (!walletPublicKey) {
       SplingContextValue.updateSelfInfo(null);
+    }else{
+      initApp();
     }
-  }, [walletPublicKey]);
+  }, [walletPublicKey, wallet]);
+
+ 
+
   useEffect(() => {
     if (!publicKeyVal) return;
     if (userContent) return;
@@ -77,7 +107,6 @@ function ProfilePage(props) {
         null,
         protocolOptions
       ).init();
-      SplingContextValue.updateSocialProtocol(sp);
       setSocialProtocolValue(sp);
     }
 
@@ -91,6 +120,52 @@ function ProfilePage(props) {
       }
     }
   }, [publicKeyVal, socialProtocolValue]);
+
+
+  const likePost = async (publicKeyOfPost) => {
+    if (!walletPublicKey) {
+      toast.error("Please connect wallet first");
+      return;
+    }
+    if (isLiking) {
+      toast.error("Please wait for the previous request to complete");
+      return;
+    }
+
+    const waitingToast = toast.loading("Waiting for transaction approval...");
+    setIsLiking(true);
+    try {
+      const likeResult = await socialProtocolValue.likePost(publicKeyOfPost);
+      toast.dismiss(waitingToast);
+      //loop through response and update the likedBy array of the post that was liked
+      let wasLike = false;
+      const updatedResponse = userContent.map((post) => {
+        if (post.publicKey === publicKeyOfPost) {
+          const updatedPost = post;
+          //if the post was already liked by the user, remove the user from the likedBy array
+          if (post.likes.includes(currentUserID)) {
+            updatedPost.likes = updatedPost.likes.filter(
+              (userId) => userId !== currentUserID
+            );
+          } else {
+            updatedPost.likes.push(currentUserID);
+            wasLike = true;
+          }
+          return updatedPost;
+        } else {
+          return post;
+        }
+      });
+      toast.success(`Successfully ${wasLike ? "liked" : "unliked"} post`);
+      setUserContent(updatedResponse);
+      setIsLiking(false);
+    } catch (err) {
+      toast.dismiss(waitingToast);
+      toast.error(`Error liking post ${err.message}`);
+      console.log(err);
+      setIsLiking(false);
+    }
+  };
 
   return (
     <div className='w-full'>
@@ -173,7 +248,11 @@ function ProfilePage(props) {
             <Masonry gutter='10px'>
               {userContent.map((post, index) => (
                 <div className='w-full px-1 mx-auto' key={index}>
-                  <PostCard postValue={post} />
+                  <PostCard postValue={post} 
+                  
+                  likeFunction={likePost}
+                  currentUserID={currentUserID}
+                  />
                 </div>
               ))}
             </Masonry>

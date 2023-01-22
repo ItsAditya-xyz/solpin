@@ -40,7 +40,7 @@ export default function Post() {
     if (currentLoggedInUser) {
       setCurrentUserID(currentLoggedInUser.userId);
     }
-    console.log(currentLoggedInUser)
+    console.log(currentLoggedInUser);
   }, [currentLoggedInUser]);
   useEffect(() => {
     async function initApp() {
@@ -78,7 +78,12 @@ export default function Post() {
       }
     }
     if (postID) {
-      initApp();
+      try{
+        initApp();
+      }
+      catch(err){
+        toast.error(`Something went wrong. Please try again ${err.message}`);
+      }
     }
   }, [postID]);
 
@@ -112,7 +117,7 @@ export default function Post() {
       return;
     }
 
-    const waitingToast = toast.loading("Liking post...");
+    const waitingToast = toast.loading("Waiting for wallet approval...");
     setIsLiking(true);
     try {
       const likeResult = await socialProtocolVal.likePost(publicKeyOfPost);
@@ -153,12 +158,57 @@ export default function Post() {
       setIsDeleting(false);
       toast.success("Post deleted successfully");
       const posterPublicKey = currentLoggedInUser.publicKey.toString();
-     navigate("/u/" + posterPublicKey);
+      navigate("/u/" + posterPublicKey);
     } catch (err) {
       toast.dismiss(waitingToast);
       toast.error("Error deleting post");
       setIsDeleting(false);
       console.log(err);
+    }
+  };
+
+  const likePostFromMasonry = async (publicKeyOfPost) => {
+    if (!walletPublicKey) {
+      toast.error("Please connect wallet first");
+      return;
+    }
+    if (isLiking) {
+      toast.error("Please wait for the previous request to complete");
+      return;
+    }
+
+    const waitingToast = toast.loading("Waiting for transaction approval...");
+    setIsLiking(true);
+    try {
+      const likeResult = await socialProtocolVal.likePost(publicKeyOfPost);
+      toast.dismiss(waitingToast);
+      let wasLike = false;
+      //loop through response and update the likedBy array of the post that was liked
+      const updatedResponse = otherPostInfo.map((post) => {
+        if (post.publicKey === publicKeyOfPost) {
+          const updatedPost = post;
+          //if the post was already liked by the user, remove the user from the likedBy array
+          if (post.likes.includes(currentUserID)) {
+            updatedPost.likes = updatedPost.likes.filter(
+              (userId) => userId !== currentUserID
+            );
+          } else {
+            updatedPost.likes.push(currentUserID);
+            wasLike = true;
+          }
+          return updatedPost;
+        } else {
+          return post;
+        }
+      });
+      toast.success(`Successfully ${wasLike ? "liked" : "unliked"} post`);
+      setOtherPostInfo(updatedResponse);
+      setIsLiking(false);
+    } catch (err) {
+      toast.dismiss(waitingToast);
+      toast.error(`Error liking post ${err.message}`);
+      console.log(err);
+      setIsLiking(false);
     }
   };
   return (
@@ -229,7 +279,9 @@ export default function Post() {
                         <Tippy content={"Delete Post"} placement="bottom">
                           <button
                             className="hover:bg-[#080623] hover:text-white bg-gray-200 duration-75 delay-75 w-12 h-12 flex justify-center items-center text-center rounded-full"
-                            onClick={()=>{handleDeletePost(postInfo.publicKey)}}
+                            onClick={() => {
+                              handleDeletePost(postInfo.publicKey);
+                            }}
                           >
                             <BiTrash size={24} color="red" />
                           </button>
@@ -277,7 +329,11 @@ export default function Post() {
               <Masonry gutter="10px">
                 {otherPostInfo.map((post, index) => (
                   <div className="w-full px-1 mx-auto" key={index}>
-                    <PostCard postValue={post} />
+                    <PostCard
+                      postValue={post}
+                      likeFunction={likePostFromMasonry}
+                      currentUserID={currentUserID}
+                    />
                   </div>
                 ))}
               </Masonry>

@@ -136,7 +136,7 @@ export default function Create() {
         <div>
           <div className='relative text-3xl md:py-10 text-gray-800 text-center font-extrabold  sm:text-5xl lg:text-4xl  rounded-full sm:w-[70%] flex justify-center mx-auto px-2 '>
             <span className='brandGradientBg blur-2xl filter opacity-10 w-full h-full absolute inset-0 rounded-full leading-snug'></span>
-            <span className='md:px-5 leading-snug'>
+            <span className='md:px-5 leading-snug mt-3'>
               <span className='text-transparent bg-clip-text brandGradientBg'>
                 {" "}
                 Create

@@ -1,14 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { timeStampToTimeAgo } from "../../utils/functions";
-import { BsHeartFill } from "react-icons/bs";
+import { BsHeart, BsHeartFill } from "react-icons/bs";
 import noImage from "../../assets/noImage.png";
 import defaultPic from "../../assets/default_profile_pic.png";
-export default function PostCard({ postValue }) {
+export default function PostCard({ postValue, likeFunction, currentUserID }) {
   const post = postValue;
   const timeAgo = timeStampToTimeAgo(post.timestamp * 1e9);
   const posterPublicKey = postValue.user.publicKey.toString();
   const totalLikes = postValue.likes.length;
+  const isLiked = post.likes.includes(currentUserID);
 
   return (
     <div className="hover:scale-105 transition-transform duration-300">
@@ -50,11 +51,19 @@ export default function PostCard({ postValue }) {
               <span className="middot" />
               <p className="text-xs text-gray-700">{timeAgo}</p>
             </div>
-            <div className="justify-end">
-              <div className="flex items-center justify-center px-2 py-2 rounded-full space-x-1">
-                <BsHeartFill size={16} color="gray" />
-                <p className="text-xs text-gray-700">{totalLikes}</p>
-              </div>
+            <div className="justify-end flex space-x-1 items-center">
+              <button
+                className="flex items-center justify-center px-2 py-2 rounded-full  border bg-gray-100 border-gray-300 hover:bg-red-200"
+                onClick={() => likeFunction(post.publicKey)}
+              >
+                {isLiked ? (
+                  <BsHeartFill size={16} color="red" />
+                ) : (
+                  <BsHeart size={16} color="red" />
+                )}
+              </button>
+
+              <p>{totalLikes}</p>
             </div>
           </div>
         </div>

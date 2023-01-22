@@ -5,22 +5,23 @@ import { Keypair } from "@solana/web3.js";
 import { Loader } from "../../components/Loader";
 import PostCard from "./PostCard";
 import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
+import toast, { Toaster } from "react-hot-toast";
 import { useWallet } from "@solana/wallet-adapter-react";
 import Navbar from "../../components/Navbar";
 import SignUpModal from "../../components/modals/SignUpModal";
 import { protocolOptions } from "../../utils/constants";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { toast } from "react-hot-toast";
 function LandingPage() {
   const SplingContextValue = useContext(SplingContext);
   const [response, setResponse] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [socialProtocolVal, setSocialProtocolVal] = useState(null);
-  const [shuoldShowWallet, setShouldShowWallet] = useState(false);
   const [showSingUpModal, setShowSignUpModal] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [offset, setOffset] = useState(0);
   const wallet = useWallet();
+  const [isLiking, setIsLiking] = useState(false);
+  const [currentUserID, setCurrentUserID] = useState(null);
   useEffect(() => {
     async function initApp() {
       const socialProtocol = await new SocialProtocol(
@@ -64,7 +65,6 @@ function LandingPage() {
       setSocialProtocolVal(socialProtocolVal);
     }
     if (wallet?.publicKey && typeof wallet !== "undefined") {
-      setShouldShowWallet(true);
       initApp();
     }
   }, [wallet]);
@@ -74,6 +74,12 @@ function LandingPage() {
       setSocialProtocolVal(SplingContextValue.socialProtocol);
     }
   }, [SplingContextValue.socialProtocol]);
+
+  useEffect(() => {
+    if (SplingContextValue.selfInfo) {
+      setCurrentUserID(SplingContextValue.selfInfo.userId);
+    }
+  }, [SplingContextValue.selfInfo]);
 
   const fetchMoreData = async () => {
     try {
@@ -100,6 +106,50 @@ function LandingPage() {
     }
   };
 
+  const likePost = async (publicKeyOfPost) => {
+    if (!SplingContextValue.selfInfo) {
+      toast.error("Please connect wallet first");
+      return;
+    }
+    if (isLiking) {
+      toast.error("Please wait for the previous request to complete");
+      return;
+    }
+
+    const waitingToast = toast.loading("Waiting for transaction approval...");
+    setIsLiking(true);
+    try {
+      const likeResult = await socialProtocolVal.likePost(publicKeyOfPost);
+      toast.dismiss(waitingToast);
+      //loop through response and update the likedBy array of the post that was liked
+      let wasLike = false;
+      const updatedResponse = response.map((post) => {
+        if (post.publicKey === publicKeyOfPost) {
+          const updatedPost = post;
+          //if the post was already liked by the user, remove the user from the likedBy array
+          if (post.likes.includes(currentUserID)) {
+            updatedPost.likes = updatedPost.likes.filter(
+              (userId) => userId !== currentUserID
+            );
+          } else {
+            updatedPost.likes.push(currentUserID);
+            wasLike = true;
+          }
+          return updatedPost;
+        } else {
+          return post;
+        }
+      });
+      toast.success(`Successfully ${wasLike ? "liked" : "unliked"} post`);
+      setResponse(updatedResponse);
+      setIsLiking(false);
+    } catch (err) {
+      toast.dismiss(waitingToast);
+      toast.error(`Error liking post ${err.message}`);
+      console.log(err);
+      setIsLiking(false);
+    }
+  };
   return (
     <div className="w-full">
       <Navbar shouldShowWallet={false} socialProtocol={socialProtocolVal} />
@@ -108,6 +158,7 @@ function LandingPage() {
         setShowModal={setShowSignUpModal}
         useWallet={useWallet}
       />
+      <Toaster />
       <div className="relative inline-flex justify-center rounded-full items-center w-full mt-24  px-2 mb-8 flex-col">
         <div className="relative text-5xl md:py-10 text-gray-800 text-center font-extrabold  sm:text-5xl lg:text-6xl  rounded-full sm:w-[70%] ">
           <span className="brandGradientBg blur-2xl filter opacity-10 w-full h-full absolute inset-0 rounded-full leading-snug"></span>
@@ -167,7 +218,11 @@ function LandingPage() {
                 <Masonry gutter="10px">
                   {response.map((post, index) => (
                     <div className="w-full px-1 mx-auto" key={index}>
-                      <PostCard postValue={post} />
+                      <PostCard
+                        postValue={post}
+                        likeFunction={likePost}
+                        currentUserID={currentUserID}
+                      />
                     </div>
                   ))}
                 </Masonry>

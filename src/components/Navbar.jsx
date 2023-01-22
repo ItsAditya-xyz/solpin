@@ -50,6 +50,12 @@ export default function Navbar({ shouldShowWallet, socialProtocol = null }) {
       setProfileInfo(selfInfoContext);
     }
   }, [SplingContextValue.selfInfo]);
+
+  useEffect(() => {
+    if(!publicKey) {
+      setProfileInfo(null);
+    }
+  }, [publicKey]);
   return (
     <div className="bg-[#20252e] flex items-center justify-between px-2 py-3">
       <Link to="/">
@@ -60,7 +66,19 @@ export default function Navbar({ shouldShowWallet, socialProtocol = null }) {
         setShowModal={setShowModal}
         useWallet={useWallet}
       />
+      <div className="flex items-center justify-cente space-x-1">
+      {profileInfo && (
+        <div className="flex items-center justify-cente space-x-1">
+        <Link
+          className="bg-[#512DA8] text-white mx-auto lg:mx-0 hover:bg-[#5D3DAA]  rounded my-2 py-3 px-9 shadow-lg w-70 hover:scale-105 text-base hidden sm:block"
+          to="/create"
+        >
+          Create
+        </Link>
+        </div>
+      )}
       {shouldShowWallet && <WalletMultiButton />}
+      
       {!shouldShowWallet && (
         <div>
           {checkingForProfile && (
@@ -71,12 +89,6 @@ export default function Navbar({ shouldShowWallet, socialProtocol = null }) {
 
           {profileInfo && (
             <div className="flex items-center justify-cente space-x-1">
-              <Link
-                className="bg-[#512DA8] text-white mx-auto lg:mx-0 hover:bg-[#5D3DAA]  rounded my-2 py-3 px-9 shadow-lg w-70 hover:scale-105 text-sm hidden sm:block"
-                to="/create"
-              >
-                Create
-              </Link>
               <Link
                 className="flex items-center justify-center space-x-2"
                 to={`/u/${publicKey}`}
@@ -119,6 +131,8 @@ export default function Navbar({ shouldShowWallet, socialProtocol = null }) {
           )}
         </div>
       )}
+    
+      </div>
     </div>
   );
 }
