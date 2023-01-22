@@ -83,7 +83,7 @@ function ProfileForm() {
     } catch (err) {
       console.log(err);
       toast.dismiss(toastID);
-      toast.error("Something went wrong. Please Try again..");
+      toast.error(`Something went wrong. Please Try again.${err.meessage}`);
     }
   };
 
