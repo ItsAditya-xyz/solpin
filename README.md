@@ -14,6 +14,3 @@ TODO:
 
 1. Add comment
 2. Comment section in /post
-3. Like/unlike post
-4. Delete posts
-5. Infinite Scroll

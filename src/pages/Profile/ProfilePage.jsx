@@ -39,6 +39,7 @@ function ProfilePage(props) {
       console.log(publicKeyVal);
       //convert address stored in publicKeyVal to Keypair
       console.log(socialProtocolValue);
+      try{
       const publicKeyObj = new PublicKey(publicKeyVal);
       console.log(publicKeyObj);
       const userInfo = await socialProtocolValue.getUserByPublicKey(
@@ -64,6 +65,11 @@ function ProfilePage(props) {
         setIsLoading(false);
         toast.error("Something went wrong. Please try again later.");
       }
+    }
+    catch(err){
+      console.log(err);
+      toast.error("Something went wrong. Make sure this is a valid address");
+    }
     }
     async function initSocialProtocol() {
       const sp = await new SocialProtocol(

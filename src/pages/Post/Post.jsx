@@ -6,6 +6,7 @@ import { Keypair, PublicKey } from "@solana/web3.js";
 import { Loader } from "../../components/Loader";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { HiOutlineLink } from "react-icons/hi";
+import { BiTrash } from "react-icons/bi";
 import Tippy from "@tippyjs/react";
 import toast, { Toaster } from "react-hot-toast";
 import ProfileCard from "./ProfileCard";
@@ -15,8 +16,10 @@ import Masonry, { ResponsiveMasonry } from "react-responsive-masonry";
 import PostCard from "../Landing/PostCard";
 import Navbar from "../../components/Navbar";
 import { protocolOptions } from "../../utils/constants";
+import defaultPostPic from "../../assets/noImage.png";
 export default function Post() {
   const { postID } = useParams();
+  const navigate = useNavigate();
   const BASE_URL = window.location.origin;
   const SplingContextValue = useContext(SplingContext);
   const { publicKey: walletPublicKey } = useWallet();
@@ -27,6 +30,18 @@ export default function Post() {
 
   const [otherPostInfo, setOtherPostInfo] = useState(null);
   const [loadingOtherPosts, setLoadingOtherPosts] = useState(true);
+
+  const [isLiking, setIsLiking] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const currentLoggedInUser = SplingContextValue.selfInfo;
+  const [currentUserID, setCurrentUserID] = useState(null);
+  useEffect(() => {
+    if (currentLoggedInUser) {
+      setCurrentUserID(currentLoggedInUser.userId);
+    }
+    console.log(currentLoggedInUser)
+  }, [currentLoggedInUser]);
   useEffect(() => {
     async function initApp() {
       setIsLoading(true);
@@ -36,6 +51,7 @@ export default function Post() {
         null,
         protocolOptions
       ).init();
+      setSocialProtocolVal(socialProtocol);
       console.log(socialProtocol);
 
       const postVal = await socialProtocol.getPost(parseInt(postID));
@@ -76,29 +92,92 @@ export default function Post() {
       ).init();
       console.log(socialProtocolValue);
       SplingContextValue.updateSocialProtocol(socialProtocolValue);
-      setSocialProtocolVal(socialProtocolVal);
+      setSocialProtocolVal(socialProtocolValue);
     }
     if (wallet?.publicKey && typeof wallet !== "undefined") {
       initApp();
     }
   }, [wallet]);
 
+  useEffect(() => {
+    setSocialProtocolVal(SplingContextValue.socialProtocol);
+  }, [SplingContextValue.socialProtocol]);
+  const likePost = async (publicKeyOfPost) => {
+    if (!walletPublicKey) {
+      toast.error("Please connect wallet first");
+      return;
+    }
+    if (isLiking) {
+      toast.error("Please wait for the previous request to complete");
+      return;
+    }
+
+    const waitingToast = toast.loading("Liking post...");
+    setIsLiking(true);
+    try {
+      const likeResult = await socialProtocolVal.likePost(publicKeyOfPost);
+
+      toast.dismiss(waitingToast);
+
+      //in postInfo.likes which is an array of userID's, add userID of current user if it is not already present else remove it
+      if (postInfo.likes.includes(currentUserID)) {
+        const newLikes = postInfo.likes.filter(
+          (item) => item !== currentUserID
+        );
+        setPostInfo({ ...postInfo, likes: newLikes });
+        toast.success("Post Unliked!");
+      } else {
+        setPostInfo({ ...postInfo, likes: [...postInfo.likes, currentUserID] });
+        toast.success("Post Liked!");
+      }
+
+      setIsLiking(false);
+    } catch (err) {
+      toast.dismiss(waitingToast);
+      toast.error("Error liking post");
+      console.log(err);
+      setIsLiking(false);
+    }
+  };
+
+  const handleDeletePost = async (postPublicKey) => {
+    if (!walletPublicKey) return toast.error("Please connect wallet first");
+    if (isDeleting)
+      return toast.error("Please wait for the previous request to complete");
+    setIsDeleting(true);
+    const waitingToast = toast.loading("Deleting post...");
+    try {
+      const deleteResult = await socialProtocolVal.deletePost(postPublicKey);
+      console.log(deleteResult);
+      toast.dismiss(waitingToast);
+      setIsDeleting(false);
+      toast.success("Post deleted successfully");
+      const posterPublicKey = currentLoggedInUser.publicKey.toString();
+     navigate("/u/" + posterPublicKey);
+    } catch (err) {
+      toast.dismiss(waitingToast);
+      toast.error("Error deleting post");
+      setIsDeleting(false);
+      console.log(err);
+    }
+  };
   return (
-    <div className='w-full'>
+    <div className="w-full">
       <Toaster />
-      <Navbar />
+      <Navbar shouldShowWallet={false} socialProtocol={socialProtocolVal} />
       <div>
         {isLoading && (
-          <div className='flex justify-center items-center mx-auto my-4'>
+          <div className="flex justify-center items-center mx-auto my-4">
             <Loader />
           </div>
         )}
         {!isLoading && (
-          <div className='w-full max-w-[1024px] shadow-[rgba(13,_38,_76,_0.19)_0px_9px_20px] rounded-3xl mx-auto mt-3'>
-            <div className='flex flex-col lg:flex-row overflow-visible'>
-              <div className='relative top-0 left-0 z-10 flex-none w-full lg:w-2/4'>
+          <div className="w-full max-w-[1024px] shadow-[rgba(13,_38,_76,_0.19)_0px_9px_20px] rounded-3xl mx-auto mt-3">
+            <div className="flex flex-col lg:flex-row overflow-visible">
+              <div className="relative top-0 left-0 z-10 flex-none w-full lg:w-2/4">
                 <div
-                  className={`image w-full border border-white/50 h-full rounded-3xl sm:rounded-bl-3xl sm:rounded-tl-3xl flex flex-col items-center justify-start p-4`}>
+                  className={`image w-full border border-white/50 h-full rounded-3xl sm:rounded-bl-3xl sm:rounded-tl-3xl flex flex-col items-center justify-start p-4`}
+                >
                   {true && (
                     <>
                       <div
@@ -107,45 +186,69 @@ export default function Post() {
                           filter: "blur(3px)",
                           opacity: ".2",
                         }}
-                        className='w-full h-full backdrop-xl backdrop-blur-md p-4 absolute top-0 left-0 rounded-bl-3xl rounded-tl-3xl '
+                        className="w-full h-full backdrop-xl backdrop-blur-md p-4 absolute top-0 left-0 rounded-bl-3xl rounded-tl-3xl "
                       />
 
                       <img
-                        className='rounded-3xl shadow-[rgba(13,_38,_76,_0.19)_0px_9px_20px] w-full object-cover z-10'
+                        className="rounded-3xl shadow-[rgba(13,_38,_76,_0.19)_0px_9px_20px] w-full object-cover z-10"
                         alt={`Pin by ${postInfo.user.nickname}`}
                         src={postInfo.media[0].file}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = defaultPostPic;
+                        }}
                       />
                     </>
                   )}
                 </div>
               </div>
-              <div className='content flex flex-col w-full lg:w-2/4 pt-8 pb-4'>
+              <div className="content flex flex-col w-full lg:w-2/4 pt-8 pb-4">
                 <div>
-                  <div className='flex justify-between border-b-2 pb-4  px-8'>
+                  <div className="flex justify-between border-b-2 pb-4  px-8">
                     <ProfileCard
                       userInfo={postInfo.user}
                       selfPublicKey={walletPublicKey}
                     />
-                    <Tippy content={"Copy Post Link"} placement='bottom'>
-                      <button
-                        className='hover:bg-[#080623] hover:text-white bg-gray-200 duration-75 delay-75 w-12 h-12 flex justify-center items-center text-center rounded-full'
-                        onClick={() => {
-                          navigator.clipboard.writeText(
-                            `${BASE_URL}/post/${postInfo.postId}`
-                          );
-                          toast.success("Copied post link to your clipboard!");
-                        }}>
-                        <HiOutlineLink size={24} />
-                      </button>
-                    </Tippy>
+                    <div className="flex items-center space-x-1 flex-shrink-0">
+                      <Tippy content={"Copy Post Link"} placement="bottom">
+                        <button
+                          className="hover:bg-[#080623] hover:text-white bg-gray-200 duration-75 delay-75 w-12 h-12 flex justify-center items-center text-center rounded-full"
+                          onClick={() => {
+                            navigator.clipboard.writeText(
+                              `${BASE_URL}/post/${postInfo.postId}`
+                            );
+                            toast.success(
+                              "Copied post link to your clipboard!"
+                            );
+                          }}
+                        >
+                          <HiOutlineLink size={24} />
+                        </button>
+                      </Tippy>
+                      {postInfo.userId === currentUserID && (
+                        <Tippy content={"Delete Post"} placement="bottom">
+                          <button
+                            className="hover:bg-[#080623] hover:text-white bg-gray-200 duration-75 delay-75 w-12 h-12 flex justify-center items-center text-center rounded-full"
+                            onClick={()=>{handleDeletePost(postInfo.publicKey)}}
+                          >
+                            <BiTrash size={24} color="red" />
+                          </button>
+                        </Tippy>
+                      )}
+                    </div>
                   </div>
                 </div>
 
-                <div className='mt-4 break-words body px-8'>
+                <div className="mt-4 break-words body px-8">
                   {postInfo.title}
                 </div>
-                <div className='border-t-2 my-8'>
-                  <BottomMeta post={postInfo} timesAgo={timeAgo} />
+                <div className="border-t-2 my-8">
+                  <BottomMeta
+                    post={postInfo}
+                    timesAgo={timeAgo}
+                    likeFunction={likePost}
+                    currentUserID={currentUserID}
+                  />
                 </div>
 
                 {/* <MetaCard post={post} />
@@ -156,23 +259,24 @@ export default function Post() {
         )}
 
         {!isLoading && loadingOtherPosts && (
-          <div className='flex justify-center items-center mx-auto my-4'>
+          <div className="flex justify-center items-center mx-auto my-4 mb-10">
             <Loader />
           </div>
         )}
         {!isLoading && !loadingOtherPosts && otherPostInfo && (
-          <div className='mt-10 px-1'>
-            <p className='text-2xl font-bold text-center my-3'>
+          <div className="mt-10 px-1">
+            <p className="text-2xl font-bold text-center my-3">
               Other Posts by {postInfo.user.nickname}
             </p>
-            <div className='w-full mb-8 mt-1'>
-              <div className='h-1 mx-auto brandGradientBg w-72 opacity-25 my-0 py-0 rounded-t'></div>
+            <div className="w-full mb-8 mt-1">
+              <div className="h-1 mx-auto brandGradientBg w-72 opacity-25 my-0 py-0 rounded-t"></div>
             </div>
             <ResponsiveMasonry
-              columnsCountBreakPoints={{ 350: 2, 750: 3, 900: 5 }}>
-              <Masonry gutter='10px'>
+              columnsCountBreakPoints={{ 350: 2, 750: 3, 900: 5 }}
+            >
+              <Masonry gutter="10px">
                 {otherPostInfo.map((post, index) => (
-                  <div className='w-full px-1 mx-auto' key={index}>
+                  <div className="w-full px-1 mx-auto" key={index}>
                     <PostCard postValue={post} />
                   </div>
                 ))}

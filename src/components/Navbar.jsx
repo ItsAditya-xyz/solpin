@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { PublicKey } from "@solana/web3.js";
 import SplingContext from "../Context/SplingContext/SplingContext";
 import { useContext } from "react";
+import defaultPic from "../assets/default_profile_pic.png";
 export default function Navbar({ shouldShowWallet, socialProtocol = null }) {
   const SplingContextValue = useContext(SplingContext);
   const [showModal, setShowModal] = useState(false);
@@ -35,7 +36,7 @@ export default function Navbar({ shouldShowWallet, socialProtocol = null }) {
     }
     if (publicKey && socialProtocol && !profileInfo) {
       checkUser();
-    }else{
+    } else {
       // console.log(publicKey)
       // console.log(socialProtocol)
       // console.log(profileInfo)
@@ -50,9 +51,9 @@ export default function Navbar({ shouldShowWallet, socialProtocol = null }) {
     }
   }, [SplingContextValue.selfInfo]);
   return (
-    <div className='bg-[#20252e] flex items-center justify-between px-2 py-3'>
-      <Link to='/'>
-        <img src={logo} className='w-[160px]' alt='logo' />
+    <div className="bg-[#20252e] flex items-center justify-between px-2 py-3">
+      <Link to="/">
+        <img src={logo} className="w-[160px]" alt="logo" />
       </Link>
       <SignUpModal
         showModal={showModal}
@@ -63,31 +64,37 @@ export default function Navbar({ shouldShowWallet, socialProtocol = null }) {
       {!shouldShowWallet && (
         <div>
           {checkingForProfile && (
-            <div className='flex items-center justify-center'>
-              <div className='animate-spin rounded-full h-5 w-5 border-b-2 border-white'></div>
+            <div className="flex items-center justify-center">
+              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
             </div>
           )}
 
           {profileInfo && (
-            <div className='flex items-center justify-cente space-x-1'>
+            <div className="flex items-center justify-cente space-x-1">
               <Link
-                className='bg-[#512DA8] text-white mx-auto lg:mx-0 hover:bg-[#5D3DAA]  rounded my-2 py-3 px-9 shadow-lg w-70 hover:scale-105 text-sm hidden sm:block'
-                to='/create'>
+                className="bg-[#512DA8] text-white mx-auto lg:mx-0 hover:bg-[#5D3DAA]  rounded my-2 py-3 px-9 shadow-lg w-70 hover:scale-105 text-sm hidden sm:block"
+                to="/create"
+              >
                 Create
               </Link>
               <Link
-                className='flex items-center justify-center space-x-2'
-                to={`/u/${publicKey}`}>
-                <div className='ml-2'>
-                  <div className='text-white text-sm font-bold'>
+                className="flex items-center justify-center space-x-2"
+                to={`/u/${publicKey}`}
+              >
+                <div className="ml-2">
+                  <div className="text-white text-sm font-bold">
                     {profileInfo.nickname}
                   </div>
                 </div>
-                <div className='flex items-center justify-center'>
+                <div className="flex items-center justify-center">
                   <img
                     src={profileInfo.avatar}
-                    className='w-10 h-10 rounded-full'
-                    alt='profile pic'
+                    className="w-10 h-10 rounded-full"
+                    alt="profile pic"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = defaultPic;
+                    }}
                   />
                 </div>
               </Link>
@@ -95,16 +102,18 @@ export default function Navbar({ shouldShowWallet, socialProtocol = null }) {
           )}
           {!profileInfo && !checkingForProfile && !publicKey && (
             <button
-              className=' bg-[#512DA8] text-white mx-auto lg:mx-0 hover:bg-[#5D3DAA]  rounded my-2 py-3 px-9 shadow-lg w-70 hover:scale-105 text-sm'
-              onClick={() => setShowModal(true)}>
+              className=" bg-[#512DA8] text-white mx-auto lg:mx-0 hover:bg-[#5D3DAA]  rounded my-2 py-3 px-9 shadow-lg w-70 hover:scale-105 text-sm"
+              onClick={() => setShowModal(true)}
+            >
               Login
             </button>
           )}
 
           {!profileInfo && !checkingForProfile && publicKey && (
             <Link
-              className=' bg-[#512DA8] text-white mx-auto lg:mx-0 hover:bg-[#5D3DAA]  rounded my-2 py-3 px-9 shadow-lg w-70 hover:scale-105 text-sm'
-              to='/sign-up'>
+              className=" bg-[#512DA8] text-white mx-auto lg:mx-0 hover:bg-[#5D3DAA]  rounded my-2 py-3 px-9 shadow-lg w-70 hover:scale-105 text-sm"
+              to="/sign-up"
+            >
               Create Profile
             </Link>
           )}

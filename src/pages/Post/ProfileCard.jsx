@@ -1,5 +1,6 @@
 import React from "react";
 import toast, { Toaster } from "react-hot-toast";
+import defaultProfilePic from "../../assets/default_profile_pic.png"
 import { Link } from "react-router-dom";
 export default function ProfileCard({ userInfo, selfPublicKey }) {
   const publicKey = userInfo.publicKey.toString();
@@ -7,7 +8,13 @@ export default function ProfileCard({ userInfo, selfPublicKey }) {
     <div className='flex flex-col '>
       <Toaster />
       <div className='flex space-x-3'>
-        <img src={userInfo.avatar} className='w-14 h-14 rounded-full' />
+        <img src={userInfo.avatar} className='w-14 h-14 rounded-full' 
+        alt="Profile Pic"
+        onError={(e) => {
+          e.target.onerror = null;
+          e.target.src = defaultProfilePic;
+        }}
+        />
         <div className='flex flex-col '>
           <div className='flex justify-between items-center space-x-2 '>
             <Link
