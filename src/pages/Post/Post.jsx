@@ -18,6 +18,8 @@ import Navbar from "../../components/Navbar";
 import { protocolOptions } from "../../utils/constants";
 import defaultPostPic from "../../assets/noImage.png";
 import CommentCard from "./CommentCard";
+import Linkify from 'linkify-react';
+import { LinkifyOptions } from "../../utils/constants";
 export default function Post() {
   const { postID } = useParams();
   const navigate = useNavigate();
@@ -43,6 +45,8 @@ export default function Post() {
 
   const [commentList, setCommentList] = useState([]);
   const [loadingComments, setLoadingComments] = useState(true);
+  
+
   useEffect(() => {
     if (currentLoggedInUser) {
       setCurrentUserID(currentLoggedInUser.userId);
@@ -421,7 +425,7 @@ export default function Post() {
                 </div>
 
                 <div className="mt-3 break-words body px-8">
-                  {postInfo.title}
+                <Linkify options={LinkifyOptions}> {postInfo.title}</Linkify>
                 </div>
                 <div className="border-t-2 mt-8 mb-3">
                   <BottomMeta

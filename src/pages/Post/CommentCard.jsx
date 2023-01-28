@@ -3,6 +3,8 @@ import { timeStampToTimeAgo } from "../../utils/functions";
 import { Link } from "react-router-dom";
 import defaultPic from "../../assets/default_profile_pic.png";
 import { BiTrash } from "react-icons/bi";
+import { LinkifyOptions } from "../../utils/constants";
+import Linkify from "linkify-react";
 function CommentCard({ comment, currentUserID, deleteComment }) {
   const timeAgo = timeStampToTimeAgo(comment.timestamp * 1e9);
   const posterPublicKey = comment.user.publicKey.toString();
@@ -50,7 +52,9 @@ function CommentCard({ comment, currentUserID, deleteComment }) {
           )}
         </div>
       </div>
+      <Linkify options={LinkifyOptions}>
       <p className="px-2">{comment.text}</p>
+      </Linkify>
     </div>
   );
 }
