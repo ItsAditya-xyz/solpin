@@ -32,7 +32,7 @@ function LandingPage() {
       setSocialProtocolVal(socialProtocol);
       console.log(socialProtocol);
       try {
-        const posts = await socialProtocol.getAllPosts(12, 20);
+        const posts = await socialProtocol.getAllPosts(12, 30);
         const finalResult = [];
         //loop through userPosts and add that post to finalResult only when media's array length is greater than 0
         for (let i = 0; i < posts.length; i++) {
@@ -85,9 +85,9 @@ function LandingPage() {
     try {
       if (!hasMore) return;
       let currentOffset = offset;
-      currentOffset += 20;
+      currentOffset += 30;
       setOffset(currentOffset);
-      const posts = await socialProtocolVal.getAllPosts(12, 20, currentOffset);
+      const posts = await socialProtocolVal.getAllPosts(12, 30, currentOffset);
       console.log(posts);
       const finalResult = [];
       //loop through userPosts and add that post to finalResult only when media's array length is greater than 0
